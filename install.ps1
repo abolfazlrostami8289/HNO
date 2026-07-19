@@ -2,7 +2,7 @@
 .SYNOPSIS
     نصب‌کننده گرافیکی و آفلاین همیار نجات
 .DESCRIPTION
-    این اسکریپت تمام نیازمندی‌ها شامل پایتون، کتابخانه‌ها و مدل‌های Ollama را به صورت آفلاین نصب می‌کند.
+    این اسکریپت ظاهر گرافیکی نصب کننده را نمایش می‌دهد.
 #>
 
 # -----------------------------------------------------------------------------
@@ -25,15 +25,6 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 # -----------------------------------------------------------------------------
-# تنظیمات مسیرها
-# -----------------------------------------------------------------------------
-$BaseDir = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
-$InstallersDir = Join-Path -Path $BaseDir -ChildPath "installers"
-$LibrariesDir = Join-Path -Path $BaseDir -ChildPath "libraries"
-$RequirementsFile = Join-Path -Path $LibrariesDir -ChildPath "requirements.txt"
-$AppFile = Join-Path -Path $BaseDir -ChildPath "app.py"
-
-# -----------------------------------------------------------------------------
 # ۲. طراحی رابط گرافیکی (GUI)
 # -----------------------------------------------------------------------------
 $Form = New-Object System.Windows.Forms.Form
@@ -52,7 +43,7 @@ $Form.MaximizeBox = $false
 $LabelTitle = New-Object System.Windows.Forms.Label
 $LabelTitle.Text = "نصب‌کننده همیار نجات"
 $LabelTitle.Font = New-Object System.Drawing.Font("Tahoma", 16, [System.Drawing.FontStyle]::Bold)
-$LabelTitle.ForeColor = [System.Drawing.Color]::FromArgb(200, 0, 0) # قرمز تیره
+$LabelTitle.ForeColor = [System.Drawing.Color]::FromArgb(220, 53, 69) # قرمز
 $LabelTitle.AutoSize = $true
 $LabelTitle.Location = New-Object System.Drawing.Point(20, 20)
 $Form.Controls.Add($LabelTitle)
@@ -78,13 +69,27 @@ $Form.Controls.Add($ProgressBar)
 $ButtonStart = New-Object System.Windows.Forms.Button
 $ButtonStart.Text = "شروع نصب"
 $ButtonStart.Size = New-Object System.Drawing.Size(150, 40)
-$ButtonStart.Location = New-Object System.Drawing.Point(225, 220)
-$ButtonStart.BackColor = [System.Drawing.Color]::FromArgb(139, 0, 0) # قرمز تیره
+$ButtonStart.Location = New-Object System.Drawing.Point(300, 220)
+$ButtonStart.BackColor = [System.Drawing.Color]::FromArgb(220, 53, 69) # قرمز
 $ButtonStart.ForeColor = [System.Drawing.Color]::White
 $ButtonStart.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
 $ButtonStart.FlatAppearance.BorderSize = 0
 $ButtonStart.Cursor = [System.Windows.Forms.Cursors]::Hand
 $Form.Controls.Add($ButtonStart)
+
+# دکمه خروج
+$ButtonExit = New-Object System.Windows.Forms.Button
+$ButtonExit.Text = "خروج"
+$ButtonExit.Size = New-Object System.Drawing.Size(150, 40)
+$ButtonExit.Location = New-Object System.Drawing.Point(120, 220)
+$ButtonExit.BackColor = [System.Drawing.Color]::FromArgb(70, 70, 70) # خاکستری
+$ButtonExit.ForeColor = [System.Drawing.Color]::White
+$ButtonExit.FlatStyle = [System.Windows.Forms.FlatStyle]::Flat
+$ButtonExit.FlatAppearance.BorderSize = 0
+$ButtonExit.Cursor = [System.Windows.Forms.Cursors]::Hand
+$ButtonExit.Add_Click({ $Form.Close() })
+$Form.Controls.Add($ButtonExit)
+
 
 # -----------------------------------------------------------------------------
 # توابع کمکی
@@ -97,176 +102,55 @@ function Update-UI ($Message, $Progress, $Color = "LightGray") {
 }
 
 # -----------------------------------------------------------------------------
+# توابع خالی (Mock Functions) برای مراحل بعدی
+# -----------------------------------------------------------------------------
+function Mock-SystemCheck {
+    Update-UI "مرحله ۳: در حال بررسی سیستم (تابع خالی)..." 10
+    Start-Sleep -Seconds 1
+}
+
+function Mock-PythonInstall {
+    Update-UI "مرحله ۴: در حال نصب پایتون (تابع خالی)..." 30
+    Start-Sleep -Seconds 1
+}
+
+function Mock-LibrariesInstall {
+    Update-UI "مرحله ۵: در حال نصب کتابخانه‌ها (تابع خالی)..." 50
+    Start-Sleep -Seconds 1
+}
+
+function Mock-OllamaInstall {
+    Update-UI "مرحله ۶: در حال نصب Ollama و کپی مدل‌ها (تابع خالی)..." 80
+    Start-Sleep -Seconds 1
+}
+
+function Mock-ShortcutsAndFinalize {
+    Update-UI "مرحله ۷: در حال ایجاد میانبرها و نهایی‌سازی (تابع خالی)..." 100 "LimeGreen"
+    Start-Sleep -Seconds 1
+    [System.Windows.Forms.MessageBox]::Show("تمامی مراحل آزمایشی با موفقیت انجام شد.", "پایان نصب", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+}
+
+# -----------------------------------------------------------------------------
 # منطق اصلی نصب
 # -----------------------------------------------------------------------------
 $ButtonStart.Add_Click({
     $ButtonStart.Enabled = $false
+    $ButtonExit.Enabled = $false
     $ButtonStart.BackColor = [System.Drawing.Color]::Gray
 
     try {
-        # --- بخش ۲: بررسی اولیه سیستم (0 تا 10%) ---
-        Update-UI "۱. شروع بررسی‌های اولیه سیستم..." 0
-        Start-Sleep -Seconds 1
+        Mock-SystemCheck
+        Mock-PythonInstall
+        Mock-LibrariesInstall
+        Mock-OllamaInstall
+        Mock-ShortcutsAndFinalize
         
-        Update-UI "۲. در حال بررسی مسیر اجرای اسکریپت..." 2
-        # بررسی کاراکتر فارسی یا فاصله در مسیر
-        if ($BaseDir -match "[\s\p{IsArabic}]") {
-            throw "مسیر فایل‌ها نباید دارای فاصله یا حروف فارسی باشد. لطفاً پوشه را به مسیری ساده مثل C:\App منتقل کنید."
-        }
-
-        Update-UI "۳. مسیر اجرای اسکریپت معتبر است." 4
-        Start-Sleep -Seconds 1
-
-        Update-UI "۴. در حال بررسی فضای خالی درایو C..." 6
-        $DriveC = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'"
-        $FreeSpaceGB = [math]::Round($DriveC.FreeSpace / 1GB, 2)
-        if ($FreeSpaceGB -lt 10) {
-            throw "فضای کافی در درایو C وجود ندارد. حداقل ۱۰ گیگابایت نیاز است."
-        }
-
-        Update-UI "۵. فضای دیسک تایید شد ($FreeSpaceGB گیگابایت موجود است)." 10
-        Start-Sleep -Seconds 1
-
-        # --- بخش ۳: نصب محیط اجرای پایتون (10 تا 30%) ---
-        Update-UI "۶. بررسی نصب بودن پایتون روی سیستم..." 12
-        $PythonInstalled = $false
-        try {
-            $PythonVersion = & python --version 2>&1
-            if ($PythonVersion -match "Python 3\.1[1-9]") {
-                $PythonInstalled = $true
-            }
-        } catch {}
-
-        if ($PythonInstalled) {
-            Update-UI "۷. پایتون 3.11+ از قبل نصب شده است." 30
-        } else {
-            Update-UI "۷. پایتون یافت نشد. آماده‌سازی برای نصب پایتون..." 15
-            $PythonInstaller = Get-ChildItem -Path $InstallersDir -Filter "python-*.exe" | Select-Object -First 1
-            if (-not $PythonInstaller) {
-                Update-UI "خطا: فایل نصب پایتون در پوشه installers یافت نشد!" 15 "Red"
-            } else {
-                Update-UI "۸. در حال نصب پایتون به صورت پنهان. لطفاً صبور باشید..." 20
-                $Process = Start-Process -FilePath $PythonInstaller.FullName -ArgumentList "/quiet InstallAllUsers=1 PrependPath=1 Include_test=0" -Wait -PassThru
-                if ($Process.ExitCode -eq 0) {
-                    Update-UI "۹. پایتون با موفقیت نصب شد." 30
-                } else {
-                    throw "نصب پایتون با خطا مواجه شد. کد خطا: $($Process.ExitCode)"
-                }
-            }
-        }
-        Start-Sleep -Seconds 1
-
-        # --- بخش ۴: نصب آفلاین کتابخانه‌ها (30 تا 50%) ---
-        Update-UI "۱۰. آماده‌سازی برای نصب آفلاین کتابخانه‌های پایتون..." 32
-        Start-Sleep -Seconds 1
-        
-        if (Test-Path $RequirementsFile) {
-            Update-UI "۱۱. در حال نصب پکیج‌ها از طریق pip (این مرحله ممکن است زمان‌بر باشد)..." 35
-            
-            # رفرش کردن متغیرهای محیطی برای شناسایی پایتون در صورت نصب جدید
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-            
-            $PipArgs = "install", "--no-index", "--find-links=`"$LibrariesDir`"", "-r", "`"$RequirementsFile`""
-            $Process = Start-Process -FilePath "python" -ArgumentList "-m pip $PipArgs" -Wait -NoNewWindow -PassThru
-            
-            if ($Process.ExitCode -eq 0) {
-                Update-UI "۱۲. کتابخانه‌ها با موفقیت نصب شدند." 50
-            } else {
-                throw "نصب کتابخانه‌ها با خطا مواجه شد."
-            }
-        } else {
-            Update-UI "۱۱. فایل requirements.txt یافت نشد. از این مرحله عبور می‌کنیم." 50
-        }
-        Start-Sleep -Seconds 1
-
-        # --- بخش ۵: نصب Ollama و انتقال مدل‌ها (50 تا 90%) ---
-        Update-UI "۱۳. بررسی نصب بودن Ollama..." 52
-        $OllamaInstalled = $false
-        try {
-            $OllamaVersion = & ollama --version 2>&1
-            if ($OllamaVersion -match "ollama") {
-                $OllamaInstalled = $true
-            }
-        } catch {}
-
-        if (-not $OllamaInstalled) {
-            Update-UI "۱۴. Ollama یافت نشد. در حال نصب Ollama..." 55
-            $OllamaInstaller = Get-ChildItem -Path $InstallersDir -Filter "OllamaSetup.exe" | Select-Object -First 1
-            if ($OllamaInstaller) {
-                $Process = Start-Process -FilePath $OllamaInstaller.FullName -ArgumentList "/SILENT" -Wait -PassThru
-                Update-UI "۱۵. Ollama نصب شد." 60
-            } else {
-                Update-UI "هشدار: فایل نصب Ollama یافت نشد." 60 "Yellow"
-            }
-        } else {
-            Update-UI "۱۴. Ollama از قبل نصب شده است." 60
-        }
-        Start-Sleep -Seconds 1
-
-        Update-UI "۱۶. بررسی پوشه مدل‌های آفلاین زبان..." 62
-        $SourceModelsDir = Join-Path -Path $InstallersDir -ChildPath "models"
-        $DestModelsDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ollama\models"
-
-        if (Test-Path $SourceModelsDir) {
-            if (-not (Test-Path $DestModelsDir)) {
-                New-Item -ItemType Directory -Path $DestModelsDir -Force | Out-Null
-            }
-            
-            Update-UI "۱۷. در حال کپی مدل‌های زبانی. لطفاً تا پایان این عملیات حجیم صبور باشید..." 65
-            $FilesToCopy = Get-ChildItem -Path $SourceModelsDir -Recurse -File
-            $TotalFiles = $FilesToCopy.Count
-            $CopiedFiles = 0
-            
-            foreach ($File in $FilesToCopy) {
-                $RelativePath = $File.FullName.Substring($SourceModelsDir.Length + 1)
-                $DestinationPath = Join-Path -Path $DestModelsDir -ChildPath $RelativePath
-                $DestinationDir = Split-Path -Parent -Path $DestinationPath
-                
-                if (-not (Test-Path $DestinationDir)) {
-                    New-Item -ItemType Directory -Path $DestinationDir -Force | Out-Null
-                }
-                
-                Copy-Item -Path $File.FullName -Destination $DestinationPath -Force
-                $CopiedFiles++
-                
-                # محاسبه پیشرفت بین 65 تا 90
-                $ProgressStep = 65 + [math]::Round(($CopiedFiles / $TotalFiles) * 25)
-                Update-UI "۱۸. در حال کپی فایل: $($File.Name) ($CopiedFiles از $TotalFiles)" $ProgressStep
-            }
-            Update-UI "۱۹. کپی مدل‌های زبانی به اتمام رسید." 90
-        } else {
-            Update-UI "۱۷. پوشه مدل‌های آفلاین یافت نشد. پرش از این مرحله..." 90
-        }
-        Start-Sleep -Seconds 1
-
-        # --- بخش ۶: نهایی‌سازی و شورتکات (90 تا 100%) ---
-        Update-UI "۲۰. در حال ایجاد شورتکات دسکتاپ..." 92
-        $DesktopPath = [Environment]::GetFolderPath("Desktop")
-        $ShortcutPath = Join-Path -Path $DesktopPath -ChildPath "Hamyar Nejat.lnk"
-        $WshShell = New-Object -ComObject WScript.Shell
-        $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
-        
-        # اجرای اسکریپت از طریق فایل bat که سیاست‌های ویندوز را دور می‌زند و پنچره‌ را مخفی می‌کند
-        $Shortcut.TargetPath = Join-Path -Path $BaseDir -ChildPath "اجرای همیار نجات.bat"
-        $Shortcut.WorkingDirectory = $BaseDir
-        # $Shortcut.IconLocation = "مسیر آیکون در صورت وجود"
-        $Shortcut.Save()
-        
-        Update-UI "۲۱. شورتکات برنامه روی دسکتاپ ایجاد شد." 96
-        Start-Sleep -Seconds 1
-
-        Update-UI "۲۲. در حال پاک‌سازی و نهایی‌سازی تنظیمات..." 98
-        Start-Sleep -Seconds 1
-
-        Update-UI "۲۳. نصب با موفقیت به پایان رسید." 100 "LimeGreen"
-        
-        [System.Windows.Forms.MessageBox]::Show("عملیات نصب با موفقیت تکمیل شد. می‌توانید برنامه را از روی دسکتاپ اجرا کنید.", "پایان نصب", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
         $Form.Close()
-
     } catch {
         Update-UI "خطا در نصب: $_" $ProgressBar.Value "Red"
         $ButtonStart.Enabled = $true
-        $ButtonStart.BackColor = [System.Drawing.Color]::FromArgb(139, 0, 0)
+        $ButtonExit.Enabled = $true
+        $ButtonStart.BackColor = [System.Drawing.Color]::FromArgb(220, 53, 69)
     }
 })
 
