@@ -6,8 +6,7 @@
 Add-Type -AssemblyName System.Windows.Forms
 
 $BaseDir = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
-$AppFile = Join-Path -Path $BaseDir -ChildPath "app\app.py"
-
+$AppFile = Join-Path -Path $BaseDir -ChildPath "app.py"
 # -----------------------------------------------------------------------------
 # ۱: بررسی سریع پیش‌نیازها
 # -----------------------------------------------------------------------------
