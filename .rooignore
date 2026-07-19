@@ -1,0 +1,10 @@
+# 1. Specific paths to ignore
+installers/models/
+installers/OllamaSetup.exe
+
+# 2. Ignore ALL executable and heavy binary files anywhere in the project
+**/*.exe
+**/*.bin
+**/*.zip
+**/*.rar
+**/*.pdf

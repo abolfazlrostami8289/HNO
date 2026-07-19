@@ -1,0 +1,6 @@
+=== اطلاعات نسخه‌های پکیج همیار نجات ===
+Python Version: 
+Ollama Version: 
+LLM Model Name & Size: 
+Total Package Size: 
+Date Packaged: 
