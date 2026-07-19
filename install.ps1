@@ -32,6 +32,20 @@ $InstallersDir = Join-Path -Path $BaseDir -ChildPath "installers"
 $LibrariesDir = Join-Path -Path $BaseDir -ChildPath "libraries"
 $RequirementsFile = Join-Path -Path $LibrariesDir -ChildPath "requirements.txt"
 $AppFile = Join-Path -Path $BaseDir -ChildPath "app.py"
+$LogsDir = Join-Path -Path $BaseDir -ChildPath "logs"
+$LogFile = Join-Path -Path $LogsDir -ChildPath "install_debug.log"
+
+if (-not (Test-Path $LogsDir)) {
+    New-Item -ItemType Directory -Path $LogsDir -Force | Out-Null
+}
+
+function Write-Log($Message, $Level = "INFO") {
+    $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $LogMessage = "[$Timestamp] [$Level] $Message"
+    Add-Content -Path $LogFile -Value $LogMessage
+}
+
+Write-Log "Installation script started."
 
 # -----------------------------------------------------------------------------
 # ۲. طراحی رابط گرافیکی (GUI)
@@ -94,6 +108,7 @@ function Update-UI ($Message, $Progress, $Color = "LightGray") {
     $LabelStatus.ForeColor = [System.Drawing.Color]::$Color
     $ProgressBar.Value = $Progress
     [System.Windows.Forms.Application]::DoEvents()
+    Write-Log "UI Update: $Message ($Progress%)"
 }
 
 # -----------------------------------------------------------------------------
@@ -111,6 +126,7 @@ $ButtonStart.Add_Click({
         Update-UI "۲. در حال بررسی مسیر اجرای اسکریپت..." 2
         # بررسی کاراکتر فارسی یا فاصله در مسیر
         if ($BaseDir -match "[\s\p{IsArabic}]") {
+            Write-Log "Invalid path detected: $BaseDir" "ERROR"
             throw "مسیر فایل‌ها نباید دارای فاصله یا حروف فارسی باشد. لطفاً پوشه را به مسیری ساده مثل C:\App منتقل کنید."
         }
 
@@ -121,6 +137,7 @@ $ButtonStart.Add_Click({
         $DriveC = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'"
         $FreeSpaceGB = [math]::Round($DriveC.FreeSpace / 1GB, 2)
         if ($FreeSpaceGB -lt 10) {
+            Write-Log "Not enough free space on C: ($FreeSpaceGB GB)" "ERROR"
             throw "فضای کافی در درایو C وجود ندارد. حداقل ۱۰ گیگابایت نیاز است."
         }
 
@@ -143,7 +160,8 @@ $ButtonStart.Add_Click({
             Update-UI "۷. پایتون یافت نشد. آماده‌سازی برای نصب پایتون..." 15
             $PythonInstaller = Get-ChildItem -Path $InstallersDir -Filter "python-*.exe" | Select-Object -First 1
             if (-not $PythonInstaller) {
-                Update-UI "خطا: فایل نصب پایتون در پوشه installers یافت نشد!" 15 "Red"
+                Write-Log "Mock: File bypassed for testing (Python Installer missing)" "INFO"
+                Update-UI "هشدار: فایل نصب پایتون در پوشه installers یافت نشد. عبور برای تست..." 15 "Yellow"
             } else {
                 Update-UI "۸. در حال نصب پایتون به صورت پنهان. لطفاً صبور باشید..." 20
                 $Process = Start-Process -FilePath $PythonInstaller.FullName -ArgumentList "/quiet InstallAllUsers=1 PrependPath=1 Include_test=0" -Wait -PassThru
@@ -160,6 +178,22 @@ $ButtonStart.Add_Click({
         Update-UI "۱۰. آماده‌سازی برای نصب آفلاین کتابخانه‌های پایتون..." 32
         Start-Sleep -Seconds 1
         
+        $VenvDir = Join-Path -Path $BaseDir -ChildPath "venv"
+        $PythonExecutable = "python"
+
+        Update-UI "۱۰.۱. ایجاد محیط مجازی پایتون (venv)..." 33
+        try {
+            $Process = Start-Process -FilePath "python" -ArgumentList "-m venv `"$VenvDir`"" -Wait -NoNewWindow -PassThru
+            if ($Process.ExitCode -ne 0) {
+                throw "کد خطای ایجاد venv: $($Process.ExitCode)"
+            }
+            Write-Log "Virtual environment created successfully."
+            $PythonExecutable = Join-Path -Path $VenvDir -ChildPath "Scripts\python.exe"
+        } catch {
+            Write-Log "Failed to create virtual environment: $_" "ERROR"
+            throw "ایجاد محیط مجازی پایتون با خطا مواجه شد."
+        }
+
         if (Test-Path $RequirementsFile) {
             Update-UI "۱۱. در حال نصب پکیج‌ها از طریق pip (این مرحله ممکن است زمان‌بر باشد)..." 35
             
@@ -167,7 +201,7 @@ $ButtonStart.Add_Click({
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
             
             $PipArgs = "install", "--no-index", "--find-links=`"$LibrariesDir`"", "-r", "`"$RequirementsFile`""
-            $Process = Start-Process -FilePath "python" -ArgumentList "-m pip $PipArgs" -Wait -NoNewWindow -PassThru
+            $Process = Start-Process -FilePath $PythonExecutable -ArgumentList "-m pip $PipArgs" -Wait -NoNewWindow -PassThru
             
             if ($Process.ExitCode -eq 0) {
                 Update-UI "۱۲. کتابخانه‌ها با موفقیت نصب شدند." 50
@@ -175,6 +209,7 @@ $ButtonStart.Add_Click({
                 throw "نصب کتابخانه‌ها با خطا مواجه شد."
             }
         } else {
+            Write-Log "Mock: File bypassed for testing (requirements.txt missing)" "INFO"
             Update-UI "۱۱. فایل requirements.txt یافت نشد. از این مرحله عبور می‌کنیم." 50
         }
         Start-Sleep -Seconds 1
@@ -196,6 +231,7 @@ $ButtonStart.Add_Click({
                 $Process = Start-Process -FilePath $OllamaInstaller.FullName -ArgumentList "/SILENT" -Wait -PassThru
                 Update-UI "۱۵. Ollama نصب شد." 60
             } else {
+                Write-Log "Mock: File bypassed for testing (OllamaSetup missing)" "INFO"
                 Update-UI "هشدار: فایل نصب Ollama یافت نشد." 60 "Yellow"
             }
         } else {
@@ -235,6 +271,7 @@ $ButtonStart.Add_Click({
             }
             Update-UI "۱۹. کپی مدل‌های زبانی به اتمام رسید." 90
         } else {
+            Write-Log "Mock: File bypassed for testing (models directory missing)" "INFO"
             Update-UI "۱۷. پوشه مدل‌های آفلاین یافت نشد. پرش از این مرحله..." 90
         }
         Start-Sleep -Seconds 1
@@ -264,6 +301,7 @@ $ButtonStart.Add_Click({
         $Form.Close()
 
     } catch {
+        Write-Log "Installation error: $_" "ERROR"
         Update-UI "خطا در نصب: $_" $ProgressBar.Value "Red"
         $ButtonStart.Enabled = $true
         $ButtonStart.BackColor = [System.Drawing.Color]::FromArgb(139, 0, 0)
