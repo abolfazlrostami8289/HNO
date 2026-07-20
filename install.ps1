@@ -28,10 +28,10 @@ Add-Type -AssemblyName System.Drawing
 # تنظیمات مسیرها
 # -----------------------------------------------------------------------------
 $BaseDir = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
-$InstallersDir = Join-Path -Path $BaseDir -ChildPath "installers"
-$LibrariesDir = Join-Path -Path $BaseDir -ChildPath "libraries"
+$InstallersDir = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\installers"
+$LibrariesDir = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\libraries"
 $RequirementsFile = Join-Path -Path $LibrariesDir -ChildPath "requirements.txt"
-$AppFile = Join-Path -Path $BaseDir -ChildPath "app.py"
+$AppFile = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\app.py"
 $LogsDir = Join-Path -Path $BaseDir -ChildPath "logs"
 $LogFile = Join-Path -Path $LogsDir -ChildPath "install_debug.log"
 
@@ -147,6 +147,7 @@ $ButtonStart.Add_Click({
         # --- بخش ۳: نصب محیط اجرای پایتون (10 تا 30%) ---
         Update-UI "۶. بررسی نصب بودن پایتون روی سیستم..." 12
         $PythonInstalled = $false
+        $MockPython = $false
         try {
             $PythonVersion = & python --version 2>&1
             if ($PythonVersion -match "Python 3\.1[1-9]") {
@@ -161,6 +162,7 @@ $ButtonStart.Add_Click({
             $PythonInstaller = Get-ChildItem -Path $InstallersDir -Filter "python-*.exe" | Select-Object -First 1
             if (-not $PythonInstaller) {
                 Write-Log "Mock: File bypassed for testing (Python Installer missing)" "INFO"
+                $MockPython = $true
                 Update-UI "هشدار: فایل نصب پایتون در پوشه installers یافت نشد. عبور برای تست..." 15 "Yellow"
             } else {
                 Update-UI "۸. در حال نصب پایتون به صورت پنهان. لطفاً صبور باشید..." 20
@@ -182,19 +184,25 @@ $ButtonStart.Add_Click({
         $PythonExecutable = "python"
 
         Update-UI "۱۰.۱. ایجاد محیط مجازی پایتون (venv)..." 33
-        try {
-            $Process = Start-Process -FilePath "python" -ArgumentList "-m venv `"$VenvDir`"" -Wait -NoNewWindow -PassThru
-            if ($Process.ExitCode -ne 0) {
-                throw "کد خطای ایجاد venv: $($Process.ExitCode)"
+        if ($MockPython) {
+            Write-Log "Mock: Venv creation bypassed" "INFO"
+        } else {
+            try {
+                $Process = Start-Process -FilePath "python" -ArgumentList "-m venv `"$VenvDir`"" -Wait -NoNewWindow -PassThru
+                if ($Process.ExitCode -ne 0) {
+                    throw "کد خطای ایجاد venv: $($Process.ExitCode)"
+                }
+                Write-Log "Virtual environment created successfully."
+                $PythonExecutable = Join-Path -Path $VenvDir -ChildPath "Scripts\python.exe"
+            } catch {
+                Write-Log "Failed to create virtual environment: $_" "ERROR"
+                throw "ایجاد محیط مجازی پایتون با خطا مواجه شد."
             }
-            Write-Log "Virtual environment created successfully."
-            $PythonExecutable = Join-Path -Path $VenvDir -ChildPath "Scripts\python.exe"
-        } catch {
-            Write-Log "Failed to create virtual environment: $_" "ERROR"
-            throw "ایجاد محیط مجازی پایتون با خطا مواجه شد."
         }
 
-        if (Test-Path $RequirementsFile) {
+        if ($MockPython) {
+            Write-Log "Mock: pip install bypassed" "INFO"
+        } elseif (Test-Path $RequirementsFile) {
             Update-UI "۱۱. در حال نصب پکیج‌ها از طریق pip (این مرحله ممکن است زمان‌بر باشد)..." 35
             
             # رفرش کردن متغیرهای محیطی برای شناسایی پایتون در صورت نصب جدید
