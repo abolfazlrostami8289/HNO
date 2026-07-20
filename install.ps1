@@ -103,12 +103,16 @@ $Form.Controls.Add($ButtonStart)
 # -----------------------------------------------------------------------------
 # توابع کمکی
 # -----------------------------------------------------------------------------
-function Update-UI ($Message, $Progress, $Color = "LightGray") {
+function Update-UI ($Message, $Progress, $Color = "LightGray", $LogMessage = $null) {
     $LabelStatus.Text = $Message
     $LabelStatus.ForeColor = [System.Drawing.Color]::$Color
     $ProgressBar.Value = $Progress
     [System.Windows.Forms.Application]::DoEvents()
-    Write-Log "UI Update: $Message ($Progress%)"
+    if ($null -ne $LogMessage) {
+        Write-Log "UI Update: $LogMessage ($Progress%)"
+    } else {
+        Write-Log "UI Update: Progress $Progress%"
+    }
 }
 
 # -----------------------------------------------------------------------------
@@ -195,7 +199,7 @@ $ButtonStart.Add_Click({
                 Write-Log "Virtual environment created successfully."
                 $PythonExecutable = Join-Path -Path $VenvDir -ChildPath "Scripts\python.exe"
             } catch {
-                Write-Log "Failed to create virtual environment: $_" "ERROR"
+                Write-Log "Failed to create virtual environment." "ERROR"
                 throw "ایجاد محیط مجازی پایتون با خطا مواجه شد."
             }
         }
@@ -292,7 +296,7 @@ $ButtonStart.Add_Click({
         $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
         
         # اجرای اسکریپت از طریق فایل bat که سیاست‌های ویندوز را دور می‌زند و پنچره‌ را مخفی می‌کند
-        $Shortcut.TargetPath = Join-Path -Path $BaseDir -ChildPath "اجرای همیار نجات.bat"
+        $Shortcut.TargetPath = Join-Path -Path $BaseDir -ChildPath "RunMe.bat"
         $Shortcut.WorkingDirectory = $BaseDir
         # $Shortcut.IconLocation = "مسیر آیکون در صورت وجود"
         $Shortcut.Save()
@@ -309,8 +313,8 @@ $ButtonStart.Add_Click({
         $Form.Close()
 
     } catch {
-        Write-Log "Installation error: $_" "ERROR"
-        Update-UI "خطا در نصب: $_" $ProgressBar.Value "Red"
+        Write-Log "Installation error encountered. Check script for details." "ERROR"
+        Update-UI "خطا در نصب: $_" $ProgressBar.Value "Red" "Installation failed due to an exception"
         $ButtonStart.Enabled = $true
         $ButtonStart.BackColor = [System.Drawing.Color]::FromArgb(139, 0, 0)
     }

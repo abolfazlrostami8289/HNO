@@ -25,8 +25,8 @@ Write-Log "Launcher script started."
 # -----------------------------------------------------------------------------
 # ۱: بررسی سریع پیش‌نیازها
 # -----------------------------------------------------------------------------
-function Show-ErrorAndExit($Message) {
-    Write-Log "Error: $Message" "ERROR"
+function Show-ErrorAndExit($Message, $LogMessage) {
+    Write-Log "Error: $LogMessage" "ERROR"
     [System.Windows.Forms.MessageBox]::Show($Message, "خطا در اجرای برنامه", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
     Exit
 }
@@ -38,7 +38,7 @@ if (-not (Test-Path $AppFile)) {
     if (Test-Path $AppFileFallback) {
         $AppFile = $AppFileFallback
     } else {
-        Show-ErrorAndExit "فایل اصلی برنامه یافت نشد! مطمئن شوید فایل app.py در پوشه HamyarNejat_Package قرار دارد."
+        Show-ErrorAndExit "فایل اصلی برنامه یافت نشد! مطمئن شوید فایل app.py در پوشه HamyarNejat_Package قرار دارد." "App file not found in standard or fallback paths."
     }
 }
 Write-Log "AppFile verified at: $AppFile"
@@ -58,11 +58,11 @@ try {
         $PythonInstalled = $true
     }
 } catch {
-    Write-Log "Failed to check python version: $_" "WARNING"
+    Write-Log "Failed to check python version." "WARNING"
 }
 
 if (-not $PythonInstalled) {
-    Show-ErrorAndExit "پایتون روی این سیستم نصب نیست یا در متغیرهای محیطی سیستم تعریف نشده است."
+    Show-ErrorAndExit "پایتون روی این سیستم نصب نیست یا در متغیرهای محیطی سیستم تعریف نشده است." "Python is not installed or not in PATH."
 }
 Write-Log "Python is installed."
 
@@ -74,11 +74,11 @@ try {
         $OllamaInstalled = $true
     }
 } catch {
-    Write-Log "Failed to check ollama version: $_" "WARNING"
+    Write-Log "Failed to check ollama version." "WARNING"
 }
 
 if (-not $OllamaInstalled) {
-    Show-ErrorAndExit "نرم‌افزار Ollama یافت نشد. لطفاً ابتدا مراحل نصب را کامل کنید."
+    Show-ErrorAndExit "نرم‌افزار Ollama یافت نشد. لطفاً ابتدا مراحل نصب را کامل کنید." "Ollama is not installed."
 }
 Write-Log "Ollama is installed."
 
@@ -121,7 +121,7 @@ function Get-AvailablePort {
 
 $SelectedPort = Get-AvailablePort
 if ($null -eq $SelectedPort) {
-    Show-ErrorAndExit "تمام پورت‌های پیش‌فرض برنامه (8501 تا 8504) اشغال هستند. لطفاً برنامه‌های مشابه را ببندید."
+    Show-ErrorAndExit "تمام پورت‌های پیش‌فرض برنامه (8501 تا 8504) اشغال هستند. لطفاً برنامه‌های مشابه را ببندید." "All default ports are occupied."
 }
 Write-Log "Selected available port: $SelectedPort"
 
@@ -140,7 +140,7 @@ if (-not (Test-Path $VenvPython)) {
 try {
     Start-Process -FilePath $VenvPython -ArgumentList "-m streamlit run `"$AppFile`" --server.port $SelectedPort --server.headless true" -WindowStyle Hidden
 } catch {
-    Show-ErrorAndExit "خطا در اجرای Streamlit: $_"
+    Show-ErrorAndExit "خطا در اجرای Streamlit. لطفاً لاگ را بررسی کنید." "Failed to start Streamlit process."
 }
 
 # انتظار برای راه‌اندازی سرور محلی
@@ -151,5 +151,5 @@ Write-Log "Opening browser at http://localhost:$SelectedPort"
 try {
     Start-Process "http://localhost:$SelectedPort"
 } catch {
-    Write-Log "Failed to open browser: $_" "WARNING"
+    Write-Log "Failed to open browser." "WARNING"
 }
