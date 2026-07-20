@@ -3,6 +3,8 @@ build/
 dist/
 coverage/
 .DS_Store
-*.log
 .env*
 !.env.example
+HamyarNejat_Package/installers/OllamaSetup.exe
+HamyarNejat_Package/installers/OllamaSetup.zip
+HamyarNejat_Package/installers/models/
