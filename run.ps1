@@ -6,7 +6,7 @@
 Add-Type -AssemblyName System.Windows.Forms
 
 $BaseDir = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
-$AppFile = Join-Path -Path $BaseDir -ChildPath "app.py"
+$AppFile = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\app\app.py"
 $LogsDir = Join-Path -Path $BaseDir -ChildPath "logs"
 $LogFile = Join-Path -Path $LogsDir -ChildPath "run_debug.log"
 
@@ -33,18 +33,18 @@ function Show-ErrorAndExit($Message) {
 
 # بررسی فایل اصلی برنامه
 if (-not (Test-Path $AppFile)) {
-    # بررسی مسیر جایگزین (در صورتی که فایل در پوشه روت باشد)
-    $AppFileRoot = Join-Path -Path $BaseDir -ChildPath "app.py"
-    if (Test-Path $AppFileRoot) {
-        $AppFile = $AppFileRoot
+    # بررسی مسیر جایگزین (در صورتی که فایل در پوشه روت پکیج باشد)
+    $AppFileFallback = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\app.py"
+    if (Test-Path $AppFileFallback) {
+        $AppFile = $AppFileFallback
     } else {
-        Show-ErrorAndExit "فایل اصلی برنامه (app.py) یافت نشد! مطمئن شوید اسکریپت در پوشه صحیح قرار دارد."
+        Show-ErrorAndExit "فایل اصلی برنامه یافت نشد! مطمئن شوید فایل app.py در پوشه HamyarNejat_Package قرار دارد."
     }
 }
 Write-Log "AppFile verified at: $AppFile"
 
 # بررسی پوشه knowledge
-$KnowledgeDir = Join-Path -Path $BaseDir -ChildPath "knowledge"
+$KnowledgeDir = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\knowledge"
 if (-not (Test-Path $KnowledgeDir)) {
     New-Item -ItemType Directory -Path $KnowledgeDir -Force | Out-Null
 }
