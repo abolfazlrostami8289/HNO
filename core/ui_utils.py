@@ -17,7 +17,7 @@ def setup_custom_sidebar():
     chat_icon_path = os.path.join(base_dir, "icon_chat.png")
     articles_icon_path = os.path.join(base_dir, "icon_articles.png")
     # اصلاح مسیر: حالا دقیقاً در روت پروژه دنبال عکس می‌گردد
-    sidebar_icon_path = os.path.join(base_dir, "icon_sidebar.png")
+    sidebar_icon_path = os.path.join(base_dir, "icon_sidebar_opened.png")
     
     logo_b64 = get_base64_of_bin_file(logo_path)
     home_b64 = get_base64_of_bin_file(home_icon_path)
@@ -49,8 +49,8 @@ def setup_custom_sidebar():
         }}
         
         /* مخفی کردن آیکون‌های پیش‌فرض دکمه‌های باز و بسته کردن سایدبار */
-        [data-testid="collapsedControl"] svg,
-        [data-testid="stSidebarCollapseButton"] svg {{
+        [data-testid="collapsedControl"] > *,
+        [data-testid="stSidebarCollapseButton"] > * {{
             display: none !important;
         }}
         
@@ -58,7 +58,7 @@ def setup_custom_sidebar():
         [data-testid="collapsedControl"]::before,
         [data-testid="stSidebarCollapseButton"]::before {{
             content: "";
-            display: inline-block;
+            display: block; /* changed from inline-block to block */
             width: 28px;
             height: 28px;
             background-image: url("data:{sidebar_icon_mime};base64,{sidebar_icon_b64}");
@@ -68,7 +68,7 @@ def setup_custom_sidebar():
             cursor: pointer;
         }}
         
-        /* چرخش فلش برای حالت باز کردن (اگر آیکون شما برعکس بود، این rotate را پاک کنید) */
+        /* چرخش فلش برای حالت بسته شدن (collapsed) */
         [data-testid="collapsedControl"]::before {{
             transform: rotate(180deg);
         }}
