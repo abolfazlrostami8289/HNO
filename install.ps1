@@ -238,12 +238,25 @@ $ButtonStart.Add_Click({
 
         if (-not $OllamaInstalled) {
             Update-UI "۱۴. Ollama یافت نشد. در حال نصب Ollama..." 55
-            $OllamaInstaller = Get-ChildItem -Path $InstallersDir -Filter "OllamaSetup.exe" | Select-Object -First 1
-            if ($OllamaInstaller) {
-                $Process = Start-Process -FilePath $OllamaInstaller.FullName -ArgumentList "/SILENT" -Wait -PassThru
+            $OllamaSourceDir = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\Installer\ollama_portable"
+            $OllamaTargetDir = Join-Path -Path $env:LOCALAPPDATA -ChildPath "Programs\Ollama"
+
+            if (Test-Path $OllamaSourceDir) {
+                if (-not (Test-Path $OllamaTargetDir)) {
+                    New-Item -ItemType Directory -Path $OllamaTargetDir -Force | Out-Null
+                }
+                Copy-Item -Path "$OllamaSourceDir\*" -Destination $OllamaTargetDir -Recurse -Force
+
+                # Update User Path
+                $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+                if ($UserPath -notmatch [regex]::Escape($OllamaTargetDir)) {
+                    $NewPath = $UserPath + ";" + $OllamaTargetDir
+                    [Environment]::SetEnvironmentVariable("Path", $NewPath, "User")
+                    $env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + $NewPath
+                }
                 Update-UI "۱۵. Ollama نصب شد." 60
             } else {
-                Write-Log "Mock: File bypassed for testing (OllamaSetup missing)" "INFO"
+                Write-Log "Mock: File bypassed for testing (ollama_portable missing)" "INFO"
                 Update-UI "هشدار: فایل نصب Ollama یافت نشد." 60 "Yellow"
             }
         } else {
