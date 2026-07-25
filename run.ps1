@@ -6,7 +6,7 @@
 Add-Type -AssemblyName System.Windows.Forms
 
 $BaseDir = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition
-$AppFile = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\app\app.py"
+$AppFile = Join-Path -Path $BaseDir -ChildPath "app.py"
 $LogsDir = Join-Path -Path $BaseDir -ChildPath "logs"
 $LogFile = Join-Path -Path $LogsDir -ChildPath "run_debug.log"
 
@@ -33,13 +33,7 @@ function Show-ErrorAndExit($Message, $LogMessage) {
 
 # بررسی فایل اصلی برنامه
 if (-not (Test-Path $AppFile)) {
-    # بررسی مسیر جایگزین (در صورتی که فایل در پوشه روت پکیج باشد)
-    $AppFileFallback = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\app.py"
-    if (Test-Path $AppFileFallback) {
-        $AppFile = $AppFileFallback
-    } else {
-        Show-ErrorAndExit "فایل اصلی برنامه یافت نشد! مطمئن شوید فایل app.py در پوشه HamyarNejat_Package قرار دارد." "App file not found in standard or fallback paths."
-    }
+    Show-ErrorAndExit "فایل اصلی برنامه یافت نشد! مطمئن شوید فایل app.py در مسیر روت قرار دارد." "App file not found in the root directory."
 }
 Write-Log "AppFile verified at: $AppFile"
 

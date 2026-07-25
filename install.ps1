@@ -296,9 +296,9 @@ $ButtonStart.Add_Click({
         $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
         
         # اجرای اسکریپت از طریق فایل bat که سیاست‌های ویندوز را دور می‌زند و پنچره‌ را مخفی می‌کند
-        $Shortcut.TargetPath = Join-Path -Path $BaseDir -ChildPath "RunMe.bat"
+        $Shortcut.TargetPath = Join-Path -Path $BaseDir -ChildPath "Start_Hamyar.bat"
         $Shortcut.WorkingDirectory = $BaseDir
-        # $Shortcut.IconLocation = "مسیر آیکون در صورت وجود"
+        $Shortcut.IconLocation = Join-Path -Path $BaseDir -ChildPath "logo.ico"
         $Shortcut.Save()
         
         Update-UI "۲۱. شورتکات برنامه روی دسکتاپ ایجاد شد." 96
