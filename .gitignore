@@ -8,3 +8,5 @@ coverage/
 HamyarNejat_Package/installers/OllamaSetup.exe
 HamyarNejat_Package/installers/OllamaSetup.zip
 HamyarNejat_Package/installers/models/
+HamyarNejat_Package/installers/ollama_portable/ollama.exe
+HamyarNejat_Package/installers/ollama_portable/lib
