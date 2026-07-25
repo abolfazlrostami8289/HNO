@@ -1,0 +1,78 @@
+[2026-07-20 21:30:36] [INFO] Launcher script started.
+[2026-07-20 21:30:36] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\app\app.py
+[2026-07-20 21:30:36] [INFO] Knowledge directory checked/created.
+[2026-07-20 21:30:36] [INFO] Python is installed.
+[2026-07-20 21:30:36] [INFO] Ollama is installed.
+[2026-07-20 21:30:36] [INFO] Ollama process is already running.
+[2026-07-20 21:30:36] [INFO] Selected available port: 8501
+[2026-07-20 21:30:36] [INFO] Starting Streamlit application...
+[2026-07-20 21:30:36] [WARNING] Virtual environment python not found at D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts\python.exe. Falling back to global python.
+[2026-07-20 21:30:40] [INFO] Opening browser at http://localhost:8501
+[2026-07-20 21:31:16] [INFO] Launcher script started.
+[2026-07-20 21:31:16] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\app\app.py
+[2026-07-20 21:31:16] [INFO] Knowledge directory checked/created.
+[2026-07-20 21:31:16] [INFO] Python is installed.
+[2026-07-20 21:31:16] [INFO] Ollama is installed.
+[2026-07-20 21:31:17] [INFO] Ollama process is already running.
+[2026-07-20 21:31:17] [INFO] Selected available port: 8502
+[2026-07-20 21:31:17] [INFO] Starting Streamlit application...
+[2026-07-20 21:31:17] [WARNING] Virtual environment python not found at D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts\python.exe. Falling back to global python.
+[2026-07-20 21:31:21] [INFO] Opening browser at http://localhost:8502
+[2026-07-20 22:14:49] [INFO] Launcher script started.
+[2026-07-20 22:14:49] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\app\app.py
+[2026-07-20 22:14:49] [INFO] Knowledge directory checked/created.
+[2026-07-20 22:14:49] [INFO] Python is installed.
+[2026-07-20 22:14:49] [INFO] Ollama is installed.
+[2026-07-20 22:14:49] [INFO] Ollama process is already running.
+[2026-07-20 22:14:49] [INFO] Selected available port: 8503
+[2026-07-20 22:14:49] [INFO] Starting Streamlit application...
+[2026-07-20 22:14:49] [WARNING] Virtual environment python not found at D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts\python.exe. Falling back to global python.
+[2026-07-20 22:14:53] [INFO] Opening browser at http://localhost:8503
+[2026-07-24 11:10:53] [INFO] Launcher script started.
+[2026-07-24 11:10:53] [INFO] AppFile verified at: C:\Users\WDAGUtilityAccount\Desktop\Project\HamyarNejat_Package\app\app.py
+[2026-07-24 11:10:53] [INFO] Knowledge directory checked/created.
+[2026-07-24 11:11:05] [INFO] Launcher script started.
+[2026-07-24 11:11:05] [INFO] AppFile verified at: C:\Users\WDAGUtilityAccount\Desktop\Project\HamyarNejat_Package\app\app.py
+[2026-07-24 11:11:05] [INFO] Knowledge directory checked/created.
+[2026-07-24 11:11:10] [WARNING] Failed to check python version.
+[2026-07-24 11:11:10] [ERROR] Error: Python is not installed or not in PATH.
+[2026-07-24 11:42:15] [INFO] Launcher script started.
+[2026-07-24 11:42:15] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\app\app.py
+[2026-07-24 11:42:15] [INFO] Knowledge directory checked/created.
+[2026-07-24 11:42:15] [INFO] Python is installed.
+[2026-07-24 11:42:15] [INFO] Ollama is installed.
+[2026-07-24 11:42:15] [INFO] Ollama process is already running.
+[2026-07-24 11:42:15] [INFO] Selected available port: 8501
+[2026-07-24 11:42:15] [INFO] Starting Streamlit application...
+[2026-07-24 11:42:15] [WARNING] Virtual environment python not found at D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts\python.exe. Falling back to global python.
+[2026-07-24 11:42:19] [INFO] Opening browser at http://localhost:8501
+[2026-07-24 11:42:44] [INFO] Launcher script started.
+[2026-07-24 11:42:44] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\app\app.py
+[2026-07-24 11:42:44] [INFO] Knowledge directory checked/created.
+[2026-07-24 11:42:44] [INFO] Python is installed.
+[2026-07-24 11:42:45] [INFO] Ollama is installed.
+[2026-07-24 11:42:45] [INFO] Ollama process is already running.
+[2026-07-24 11:42:45] [INFO] Selected available port: 8502
+[2026-07-24 11:42:45] [INFO] Starting Streamlit application...
+[2026-07-24 11:42:45] [WARNING] Virtual environment python not found at D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts\python.exe. Falling back to global python.
+[2026-07-24 11:42:49] [INFO] Opening browser at http://localhost:8502
+[2026-07-24 11:43:36] [INFO] Launcher script started.
+[2026-07-24 11:43:36] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\app\app.py
+[2026-07-24 11:43:36] [INFO] Knowledge directory checked/created.
+[2026-07-24 11:43:36] [INFO] Python is installed.
+[2026-07-24 11:43:37] [INFO] Ollama is installed.
+[2026-07-24 11:43:37] [INFO] Ollama process is already running.
+[2026-07-24 11:43:37] [INFO] Selected available port: 8503
+[2026-07-24 11:43:37] [INFO] Starting Streamlit application...
+[2026-07-24 11:43:37] [WARNING] Virtual environment python not found at D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts\python.exe. Falling back to global python.
+[2026-07-24 11:43:41] [INFO] Opening browser at http://localhost:8503
+[2026-07-24 21:12:26] [INFO] Launcher script started.
+[2026-07-24 21:12:26] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\app\app.py
+[2026-07-24 21:12:26] [INFO] Knowledge directory checked/created.
+[2026-07-24 21:12:27] [INFO] Python is installed.
+[2026-07-24 21:12:27] [INFO] Ollama is installed.
+[2026-07-24 21:12:27] [INFO] Ollama process is already running.
+[2026-07-24 21:12:27] [INFO] Selected available port: 8504
+[2026-07-24 21:12:27] [INFO] Starting Streamlit application...
+[2026-07-24 21:12:27] [WARNING] Virtual environment python not found at D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts\python.exe. Falling back to global python.
+[2026-07-24 21:12:31] [INFO] Opening browser at http://localhost:8504
