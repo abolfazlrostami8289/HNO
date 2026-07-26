@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+venv/
+python/
+logs/
+hamyar_env.json
+HamyarNejat_Package/app/lancedb_data/
+HamyarNejat_Package/app/chat_history.json
+HamyarNejat_Package/libraries/*.whl

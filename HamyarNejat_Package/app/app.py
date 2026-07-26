@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import base64
+from core.ui_utils import setup_custom_sidebar
 
 def get_base64_of_bin_file(bin_file):
     if os.path.exists(bin_file):
@@ -113,10 +114,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-with st.sidebar:
-    st.page_link("app.py", label="صفحه اصلی", icon="🏠")
-    st.page_link("pages/1_Chat.py", label="چت بات", icon="💬")
-    st.page_link("pages/2_Articles.py", label="مقالات", icon="📚")
+setup_custom_sidebar()
 
 st.divider()
 

@@ -76,3 +76,54 @@
 [2026-07-24 21:12:27] [INFO] Starting Streamlit application...
 [2026-07-24 21:12:27] [WARNING] Virtual environment python not found at D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts\python.exe. Falling back to global python.
 [2026-07-24 21:12:31] [INFO] Opening browser at http://localhost:8504
+[2026-07-26 11:02:30] [INFO] Launcher script started.
+[2026-07-26 11:02:30] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\app.py
+[2026-07-26 11:02:30] [INFO] Knowledge directory checked/created.
+[2026-07-26 11:02:30] [INFO] Python is installed.
+[2026-07-26 11:03:26] [INFO] Launcher script started.
+[2026-07-26 11:03:26] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\app.py
+[2026-07-26 11:03:26] [INFO] Knowledge directory checked/created.
+[2026-07-26 11:03:26] [INFO] Python is installed.
+[2026-07-26 11:03:26] [ERROR] Error: Ollama is not installed.
+[2026-07-26 11:51:48] [INFO] Launcher script started.
+[2026-07-26 11:51:48] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\app.py
+[2026-07-26 11:51:48] [INFO] Knowledge directory checked/created.
+[2026-07-26 11:51:48] [INFO] Python is installed.
+[2026-07-26 11:51:48] [WARNING] Failed to check ollama version.
+[2026-07-26 11:51:48] [ERROR] Error: Ollama is not installed.
+[2026-07-26 12:04:25] [INFO] Launcher script started.
+[2026-07-26 12:04:25] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\app.py
+[2026-07-26 12:04:25] [INFO] Knowledge directory checked/created.
+[2026-07-26 12:04:25] [INFO] Python is installed.
+[2026-07-26 12:04:26] [INFO] Ollama is installed.
+[2026-07-26 12:04:26] [INFO] Ollama process is already running.
+[2026-07-26 12:04:26] [INFO] Selected available port: 8501
+[2026-07-26 12:04:26] [INFO] Starting Streamlit application...
+[2026-07-26 12:04:30] [INFO] Opening browser at http://localhost:8501
+[2026-07-26 12:10:11] [INFO] Launcher script started.
+[2026-07-26 12:10:11] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\app.py
+[2026-07-26 12:10:11] [INFO] Knowledge directory checked/created.
+[2026-07-26 12:10:11] [INFO] Python is installed.
+[2026-07-26 12:10:11] [INFO] Ollama is installed.
+[2026-07-26 12:10:11] [INFO] Ollama process is already running.
+[2026-07-26 12:10:11] [INFO] Selected available port: 8501
+[2026-07-26 12:10:11] [INFO] Starting Streamlit application...
+[2026-07-26 12:10:15] [INFO] Opening browser at http://localhost:8501
+[2026-07-26 17:52:00] [INFO] Launcher script started.
+[2026-07-26 17:52:00] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\app.py
+[2026-07-26 17:52:00] [INFO] Knowledge directory checked/created.
+[2026-07-26 17:52:00] [INFO] Python is installed.
+[2026-07-26 17:52:00] [INFO] Ollama is installed.
+[2026-07-26 17:52:00] [INFO] Ollama process is already running.
+[2026-07-26 17:52:00] [INFO] Selected available port: 8501
+[2026-07-26 17:52:00] [INFO] Starting Streamlit application...
+[2026-07-26 17:52:04] [INFO] Opening browser at http://localhost:8501
+[2026-07-26 17:52:21] [INFO] Launcher script started.
+[2026-07-26 17:52:21] [INFO] AppFile verified at: D:\UT\ManagementAndcontrollingITProjects\HNO\app.py
+[2026-07-26 17:52:21] [INFO] Knowledge directory checked/created.
+[2026-07-26 17:52:21] [INFO] Python is installed.
+[2026-07-26 17:52:21] [INFO] Ollama is installed.
+[2026-07-26 17:52:21] [INFO] Ollama process is already running.
+[2026-07-26 17:52:21] [INFO] Selected available port: 8501
+[2026-07-26 17:52:21] [INFO] Starting Streamlit application...
+[2026-07-26 17:52:25] [INFO] Opening browser at http://localhost:8501

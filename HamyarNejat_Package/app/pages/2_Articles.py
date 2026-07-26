@@ -1,10 +1,32 @@
 import streamlit as st
 import os
+import sys
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+from core.ui_utils import setup_custom_sidebar, get_base64_of_bin_file
 
 def inject_articles_css():
     st.markdown("""
     <style>
-                        /* راست‌چین کردن قطعی لیست‌های نقطه‌ای و عددی در مقالات */
+        /* راست‌چین کردن لیبل دراپ‌داون */
+        [data-testid="stSelectbox"] label {
+            direction: rtl !important;
+            text-align: right !important;
+            width: 100% !important;
+            display: block !important;
+        }
+
+        /* راست‌چین کردن متن داخل خود باکس دراپ‌داون */
+        [data-testid="stSelectbox"] div[data-baseweb="select"] {
+            direction: rtl !important;
+            text-align: right !important;
+        }
+        
+        /* راست‌چین کردن قطعی لیست‌های نقطه‌ای و عددی در مقالات */
         [data-testid="stMarkdownContainer"] ul, 
         [data-testid="stMarkdownContainer"] ol, 
         [data-testid="stMarkdownContainer"] li {
@@ -12,9 +34,10 @@ def inject_articles_css():
             text-align: right !important;
             padding-right: 20px !important; /* برای ایجاد فاصله مناسب بولت‌ها از سمت راست */
         }  
+        
         @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
         html, body, p, div, h1, h2, h3, h4, h5, h6, a, button, input, textarea, select {
-            font-family: 'Vazirmatn', sans-serif;
+            font-family: 'Vazirmatn', sans-serif !important;
         }
         .material-symbols-rounded, 
         span[class*="material-symbols"] {
@@ -49,6 +72,7 @@ def inject_articles_css():
     """, unsafe_allow_html=True)
 
 st.set_page_config(page_title="مقالات فوریت‌های پزشکی", page_icon="logo.png", layout="centered")
+setup_custom_sidebar()
 inject_articles_css()
 
 # Pinned Footer
@@ -58,12 +82,16 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-st.title("مقالات فوریت‌های پزشکی 📚")
+articles_icon_path = os.path.join(parent_dir, "icon_articles.png")
+articles_b64 = get_base64_of_bin_file(articles_icon_path)
+icon_html = f'<img src="data:image/png;base64,{articles_b64}" style="width: 40px; margin-left: 10px;">' if articles_b64 else ""
 
-with st.sidebar:
-    st.page_link("app.py", label="صفحه اصلی", icon="🏠")
-    st.page_link("pages/1_Chat.py", label="چت بات", icon="💬")
-    st.page_link("pages/2_Articles.py", label="مقالات", icon="📚")
+st.markdown(f"""
+<div style="display: flex; align-items: center; justify-content: flex-start; direction: rtl; margin-bottom: 20px;">
+    {icon_html}
+    <h1 style="margin: 0; padding: 0;">مقالات فوریت‌های پزشکی</h1>
+</div>
+""", unsafe_allow_html=True)
 
 st.write("در این بخش می‌توانید به صورت مستقیم و بدون هوش مصنوعی به دستورالعمل‌های حیاتی پزشکی دسترسی داشته باشید.")
 st.divider()
@@ -106,4 +134,3 @@ else:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
             st.markdown(content)
-

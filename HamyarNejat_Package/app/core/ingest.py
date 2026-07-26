@@ -3,18 +3,17 @@ import lancedb
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
+# ایمپورت کردن تمام متغیرهای مورد نیاز از فایل کانفیگ به صورت صحیح در بالای فایل
+from core.config import EMBED_MODEL, OLLAMA_BASE_URL, ARTICLES_DIRNAME, TABLE_NAME
+
 # تعیین مسیرها
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DB_PATH = os.path.join(BASE_DIR, "lancedb_data")
-ARTICLES_DIR = os.path.join(BASE_DIR, "knowledge-files")
-for filename in os.listdir(ARTICLES_DIR):
-    if filename.endswith(".md"): # این شرط حیاتی است تا به بقیه فایل‌ها گیر ندهد
-        file_path = os.path.join(ARTICLES_DIR, filename)
-        # ... ادامه پردازش
+ARTICLES_DIR = os.path.join(BASE_DIR, ARTICLES_DIRNAME)
 
 def get_embeddings_model():
     """Returns the local Ollama embedding model."""
-    return OllamaEmbeddings(model="bge-m3")
+    return OllamaEmbeddings(model=EMBED_MODEL, base_url=OLLAMA_BASE_URL)
 
 def chunk_markdown_with_metadata(file_path: str):
     """
@@ -43,9 +42,6 @@ def chunk_markdown_with_metadata(file_path: str):
             
     content = "".join(content_lines)
     
-    # بخش Chunking همان‌طور که نیاز داشتی
-    from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
-    
     headers_to_split_on = [("#", "Header 1"), ("##", "Header 2"), ("###", "Header 3")]
     markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
     md_chunks = markdown_splitter.split_text(content)
@@ -66,28 +62,30 @@ def ingest_all():
     خواندن مقالات، تولید وکتور و ذخیره در یک جدول یکپارچه همراه با فیلتر متادیتا
     """
     print("Starting Ingestion Process...")
-    db = lancedb.connect(DB_PATH)
-    embedder = get_embeddings_model()
-    table_name = "knowledge_base" # جدول یکپارچه
     
     if not os.path.exists(ARTICLES_DIR):
         print(f"Error: Articles folder not found at {ARTICLES_DIR}")
         return
         
+    db = lancedb.connect(DB_PATH)
+    embedder = get_embeddings_model()
+    table_name = TABLE_NAME 
+    
     all_chunks = []
     
-    # خواندن تمام فایل‌های مارک‌داون
+    # خواندن تمام فایل‌های مارک‌داون و پر کردن لیست
     for filename in os.listdir(ARTICLES_DIR):
         if filename.endswith(".md"):
             file_path = os.path.join(ARTICLES_DIR, filename)
             chunks = chunk_markdown_with_metadata(file_path)
             all_chunks.extend(chunks)
+            print(f"Processed: {filename} -> Generated {len(chunks)} chunks.")
             
     if not all_chunks:
         print("No valid chunks found to ingest.")
         return
 
-    print(f"Generating embeddings for {len(all_chunks)} chunks using bge-m3...")
+    print(f"Generating embeddings for {len(all_chunks)} chunks using {EMBED_MODEL}...")
     
     # تولید وکتور برای تمام تکه‌ها
     texts = [chunk.page_content for chunk in all_chunks]
