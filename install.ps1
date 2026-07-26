@@ -187,19 +187,29 @@ $ButtonStart.Add_Click({
         $VenvDir = Join-Path -Path $BaseDir -ChildPath "venv"
         $PythonExecutable = "python"
 
+        # رفرش کردن متغیرهای محیطی برای شناسایی پایتون در صورت نصب جدید
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
         Update-UI "۱۰.۱. ایجاد محیط مجازی پایتون (venv)..." 33
         if ($MockPython) {
             Write-Log "Mock: Venv creation bypassed" "INFO"
         } else {
             try {
-                $Process = Start-Process -FilePath "python" -ArgumentList "-m venv `"$VenvDir`"" -Wait -NoNewWindow -PassThru
+                $VenvErrorLog = Join-Path -Path $LogsDir -ChildPath "venv_error.log"
+                $VenvOutputLog = Join-Path -Path $LogsDir -ChildPath "venv_output.log"
+                $Process = Start-Process -FilePath "python" -ArgumentList "-m venv `"$VenvDir`"" -Wait -NoNewWindow -PassThru -RedirectStandardError $VenvErrorLog -RedirectStandardOutput $VenvOutputLog
                 if ($Process.ExitCode -ne 0) {
+                    $ErrorDetails = ""
+                    if (Test-Path $VenvErrorLog) {
+                        $ErrorDetails = Get-Content -Path $VenvErrorLog -Raw
+                    }
+                    Write-Log "Failed to create virtual environment. ExitCode: $($Process.ExitCode). Details: $ErrorDetails" "ERROR"
                     throw "کد خطای ایجاد venv: $($Process.ExitCode)"
                 }
                 Write-Log "Virtual environment created successfully."
                 $PythonExecutable = Join-Path -Path $VenvDir -ChildPath "Scripts\python.exe"
             } catch {
-                Write-Log "Failed to create virtual environment." "ERROR"
+                Write-Log "Failed to create virtual environment exception: $_" "ERROR"
                 throw "ایجاد محیط مجازی پایتون با خطا مواجه شد."
             }
         }
@@ -208,9 +218,6 @@ $ButtonStart.Add_Click({
             Write-Log "Mock: pip install bypassed" "INFO"
         } elseif (Test-Path $RequirementsFile) {
             Update-UI "۱۱. در حال نصب پکیج‌ها از طریق pip (این مرحله ممکن است زمان‌بر باشد)..." 35
-            
-            # رفرش کردن متغیرهای محیطی برای شناسایی پایتون در صورت نصب جدید
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
             
             $PipArgs = "install", "--no-index", "--find-links=`"$LibrariesDir`"", "-r", "`"$RequirementsFile`""
             $Process = Start-Process -FilePath $PythonExecutable -ArgumentList "-m pip $PipArgs" -Wait -NoNewWindow -PassThru
@@ -238,12 +245,25 @@ $ButtonStart.Add_Click({
 
         if (-not $OllamaInstalled) {
             Update-UI "۱۴. Ollama یافت نشد. در حال نصب Ollama..." 55
-            $OllamaInstaller = Get-ChildItem -Path $InstallersDir -Filter "OllamaSetup.exe" | Select-Object -First 1
-            if ($OllamaInstaller) {
-                $Process = Start-Process -FilePath $OllamaInstaller.FullName -ArgumentList "/SILENT" -Wait -PassThru
+            $OllamaSourceDir = Join-Path -Path $InstallersDir -ChildPath "ollama_portable"
+            $OllamaTargetDir = Join-Path -Path $env:LOCALAPPDATA -ChildPath "Programs\Ollama"
+
+            if (Test-Path $OllamaSourceDir) {
+                if (-not (Test-Path $OllamaTargetDir)) {
+                    New-Item -ItemType Directory -Path $OllamaTargetDir -Force | Out-Null
+                }
+                Copy-Item -Path "$OllamaSourceDir\*" -Destination $OllamaTargetDir -Recurse -Force
+
+                # Update User Path
+                $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+                if ($UserPath -notmatch [regex]::Escape($OllamaTargetDir)) {
+                    $NewPath = $UserPath + ";" + $OllamaTargetDir
+                    [Environment]::SetEnvironmentVariable("Path", $NewPath, "User")
+                    $env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + $NewPath
+                }
                 Update-UI "۱۵. Ollama نصب شد." 60
             } else {
-                Write-Log "Mock: File bypassed for testing (OllamaSetup missing)" "INFO"
+                Write-Log "Mock: File bypassed for testing (ollama_portable missing)" "INFO"
                 Update-UI "هشدار: فایل نصب Ollama یافت نشد." 60 "Yellow"
             }
         } else {
