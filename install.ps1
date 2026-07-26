@@ -187,19 +187,29 @@ $ButtonStart.Add_Click({
         $VenvDir = Join-Path -Path $BaseDir -ChildPath "venv"
         $PythonExecutable = "python"
 
+        # رفرش کردن متغیرهای محیطی برای شناسایی پایتون در صورت نصب جدید
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
         Update-UI "۱۰.۱. ایجاد محیط مجازی پایتون (venv)..." 33
         if ($MockPython) {
             Write-Log "Mock: Venv creation bypassed" "INFO"
         } else {
             try {
-                $Process = Start-Process -FilePath "python" -ArgumentList "-m venv `"$VenvDir`"" -Wait -NoNewWindow -PassThru
+                $VenvErrorLog = Join-Path -Path $LogsDir -ChildPath "venv_error.log"
+                $VenvOutputLog = Join-Path -Path $LogsDir -ChildPath "venv_output.log"
+                $Process = Start-Process -FilePath "python" -ArgumentList "-m venv `"$VenvDir`"" -Wait -NoNewWindow -PassThru -RedirectStandardError $VenvErrorLog -RedirectStandardOutput $VenvOutputLog
                 if ($Process.ExitCode -ne 0) {
+                    $ErrorDetails = ""
+                    if (Test-Path $VenvErrorLog) {
+                        $ErrorDetails = Get-Content -Path $VenvErrorLog -Raw
+                    }
+                    Write-Log "Failed to create virtual environment. ExitCode: $($Process.ExitCode). Details: $ErrorDetails" "ERROR"
                     throw "کد خطای ایجاد venv: $($Process.ExitCode)"
                 }
                 Write-Log "Virtual environment created successfully."
                 $PythonExecutable = Join-Path -Path $VenvDir -ChildPath "Scripts\python.exe"
             } catch {
-                Write-Log "Failed to create virtual environment." "ERROR"
+                Write-Log "Failed to create virtual environment exception: $_" "ERROR"
                 throw "ایجاد محیط مجازی پایتون با خطا مواجه شد."
             }
         }
@@ -208,9 +218,6 @@ $ButtonStart.Add_Click({
             Write-Log "Mock: pip install bypassed" "INFO"
         } elseif (Test-Path $RequirementsFile) {
             Update-UI "۱۱. در حال نصب پکیج‌ها از طریق pip (این مرحله ممکن است زمان‌بر باشد)..." 35
-            
-            # رفرش کردن متغیرهای محیطی برای شناسایی پایتون در صورت نصب جدید
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
             
             $PipArgs = "install", "--no-index", "--find-links=`"$LibrariesDir`"", "-r", "`"$RequirementsFile`""
             $Process = Start-Process -FilePath $PythonExecutable -ArgumentList "-m pip $PipArgs" -Wait -NoNewWindow -PassThru
