@@ -245,7 +245,7 @@ $ButtonStart.Add_Click({
 
         if (-not $OllamaInstalled) {
             Update-UI "۱۴. Ollama یافت نشد. در حال نصب Ollama..." 55
-            $OllamaSourceDir = Join-Path -Path $BaseDir -ChildPath "HamyarNejat_Package\Installer\ollama_portable"
+            $OllamaSourceDir = Join-Path -Path $InstallersDir -ChildPath "ollama_portable"
             $OllamaTargetDir = Join-Path -Path $env:LOCALAPPDATA -ChildPath "Programs\Ollama"
 
             if (Test-Path $OllamaSourceDir) {
