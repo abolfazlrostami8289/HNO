@@ -353,7 +353,9 @@ function Start-Installation {
     if (-not $PythonExe) {
         # Fall back to a system interpreter, resolved to an ABSOLUTE path so we
         # never depend on PATH state at launch time.
-        $found = (Get-Command python.exe -ErrorAction SilentlyContinue |
+        # Filter out the 0-byte Windows Store aliases which cause "Python was not found" errors.
+        $found = (Get-Command python.exe -All -ErrorAction SilentlyContinue |
+                  Where-Object { $_.Source -notmatch 'WindowsApps' } |
                   Select-Object -First 1 -ExpandProperty Source)
         if (-not $found) {
             throw ("پایتون روی این سیستم یافت نشد و فایل نصب پایتون هم در پوشه installers وجود ندارد.`n" +
