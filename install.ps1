@@ -80,7 +80,14 @@ function Write-Log {
     $line = "[{0}] [{1}] {2}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Level, $Message
     try { Add-Content -Path $LogFile -Value $line -Encoding UTF8 } catch { }
     if ($Silent) { Write-Host $line }
+    trap {
+    Write-Log "UNHANDLED: $($_.Exception.Message)" 'ERROR'
+    Write-Log "$($_.ScriptStackTrace)" 'ERROR'
+    Write-Host "FATAL: $($_.Exception.Message)" -ForegroundColor Red
+    exit 1
 }
+}
+
 
 # Rotate the previous log so each run is diagnosable in isolation.
 if (Test-Path $LogFile) {
