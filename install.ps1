@@ -332,10 +332,19 @@ function Start-Installation {
     #   then failed the install with an opaque pip error.
     # -------------------------------------------------------------------------
     Update-UI '۹. بررسی سازگاری نسخه پایتون با بسته‌های آفلاین...' 24
-    $code = Invoke-Tracked -FilePath $PythonExe `
-                           -Arguments @('-c', 'import sys;print("cp%d%d" % sys.version_info[:2]);print(sys.version)') `
-                           -StdOutFile $ProbeOutLog -StdErrFile $ProbeErrLog -TimeoutSeconds 60
-    if ($code -ne 0) { throw "اجرای پایتون با خطا مواجه شد. جزئیات در $ProbeErrLog" }
+
+    $probeScript = Join-Path $LogsDir 'probe.py'
+    $probeCode = 'import sys;print("cp%d%d" % sys.version_info[:2]);print(sys.version)'
+    Set-Content -Path $probeScript -Value $probeCode -Encoding UTF8
+
+    try {
+        $code = Invoke-Tracked -FilePath $PythonExe `
+                               -Arguments @($probeScript) `
+                               -StdOutFile $ProbeOutLog -StdErrFile $ProbeErrLog -TimeoutSeconds 60
+        if ($code -ne 0) { throw "اجرای پایتون با خطا مواجه شد. جزئیات در $ProbeErrLog" }
+    } finally {
+        Remove-Item -Path $probeScript -ErrorAction SilentlyContinue
+    }
 
     $probe     = @(Get-Content -LiteralPath $ProbeOutLog | Where-Object { $_.Trim() })
     $pyTag     = $probe[0].Trim()
