@@ -1,29 +1,31 @@
-﻿[2026-07-27 11:26:11] [INFO] ==========================================================
-[2026-07-27 11:26:11] [INFO] Installation script started.
-[2026-07-27 11:26:11] [INFO] BaseDir      : D:\UT\ManagementAndcontrollingITProjects\HNO
-[2026-07-27 11:26:11] [INFO] PowerShell   : 5.1.26100.8875
-[2026-07-27 11:26:11] [INFO] OS           : Microsoft Windows NT 10.0.26200.0
-[2026-07-27 11:26:11] [INFO] User         : Sejron.com (elevated=False)
-[2026-07-27 11:26:11] [INFO] UI: ۱. بررسی مسیر نصب و فضای دیسک...
-[2026-07-27 11:26:11] [INFO] Free space on D:: 34.77 GB
-[2026-07-27 11:26:11] [INFO] UI: ۲. مسیر نصب معتبر است. فضای آزاد: 34.77 گیگابایت
-[2026-07-27 11:26:11] [INFO] UI: ۳. جستجوی فایل requirements...
-[2026-07-27 11:26:11] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.lock.txt
-[2026-07-27 11:26:11] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.txt
-[2026-07-27 11:26:11] [INFO] requirements resolved to: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.lock.txt
-[2026-07-27 11:26:12] [INFO] requirements entries: 90
-[2026-07-27 11:26:12] [INFO] UI: ۴. فایل requirements یافت شد (90 بسته).
-[2026-07-27 11:26:12] [INFO] UI: ۵. بررسی مخزن آفلاین کتابخانه‌ها...
-[2026-07-27 11:26:12] [INFO] Offline packages found: 107 wheels, 107 source archives
-[2026-07-27 11:26:12] [INFO] UI: ۶. تعداد 107 بسته آفلاین آماده است.
-[2026-07-27 11:26:12] [INFO] UI: ۷. آماده‌سازی مفسر پایتون...
-[2026-07-27 11:26:12] [INFO] UI: ۸. نصب پایتون به صورت پنهان و محلی. لطفاً صبور باشید...
-[2026-07-27 11:26:12] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python-3.13.12-amd64.exe" /quiet InstallAllUsers=0 PrependPath=0 AssociateFiles=0 Shortcuts=0 Include_test=0 Include_launcher=0 Include_doc=0 "TargetDir=D:\UT\ManagementAndcontrollingITProjects\HNO\python"
-[2026-07-27 11:26:13] [ERROR] INSTALLATION FAILED: پایتون نصب شد اما فایل اجرایی در مسیر مورد انتظار یافت نشد: D:\UT\ManagementAndcontrollingITProjects\HNO\python\python.exe
-[2026-07-27 11:26:13] [ERROR] ScriptStackTrace: at Start-Installation, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 346
+﻿[2026-07-27 13:01:05] [INFO] ==========================================================
+[2026-07-27 13:01:05] [INFO] Installation script started.
+[2026-07-27 13:01:05] [INFO] BaseDir      : D:\UT\ManagementAndcontrollingITProjects\HNO
+[2026-07-27 13:01:05] [INFO] PowerShell   : 5.1.26100.8875
+[2026-07-27 13:01:05] [INFO] OS           : Microsoft Windows NT 10.0.26200.0
+[2026-07-27 13:01:05] [INFO] User         : Sejron.com (elevated=False)
+[2026-07-27 13:01:06] [INFO] UI: ۱. بررسی مسیر نصب و فضای دیسک...
+[2026-07-27 13:01:06] [INFO] Free space on D:: 34.77 GB
+[2026-07-27 13:01:06] [INFO] UI: ۲. مسیر نصب معتبر است. فضای آزاد: 34.77 گیگابایت
+[2026-07-27 13:01:06] [INFO] UI: ۳. جستجوی فایل requirements...
+[2026-07-27 13:01:06] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.lock.txt
+[2026-07-27 13:01:06] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.txt
+[2026-07-27 13:01:06] [INFO] requirements resolved to: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.lock.txt
+[2026-07-27 13:01:06] [INFO] requirements entries: 90
+[2026-07-27 13:01:06] [INFO] UI: ۴. فایل requirements یافت شد (90 بسته).
+[2026-07-27 13:01:06] [INFO] UI: ۵. بررسی مخزن آفلاین کتابخانه‌ها...
+[2026-07-27 13:01:06] [INFO] Offline packages found: 107 wheels, 107 source archives
+[2026-07-27 13:01:06] [INFO] UI: ۶. تعداد 107 بسته آفلاین آماده است.
+[2026-07-27 13:01:06] [INFO] UI: ۷. آماده‌سازی مفسر پایتون...
+[2026-07-27 13:01:06] [WARNING] Using system Python: C:\Users\Sejron.com\AppData\Local\Microsoft\WindowsApps\python.exe
+[2026-07-27 13:01:06] [INFO] UI: ۹. بررسی سازگاری نسخه پایتون با بسته‌های آفلاین...
+[2026-07-27 13:01:06] [INFO] EXEC: "C:\Users\Sejron.com\AppData\Local\Microsoft\WindowsApps\python.exe" -c "import sys;print(\"cp%d%d\" % sys.version_info[:2]);print(sys.version)"
+[2026-07-27 13:01:07] [INFO] EXIT:  after 0s
+[2026-07-27 13:01:07] [ERROR] INSTALLATION FAILED: اجرای پایتون با خطا مواجه شد. جزئیات در D:\UT\ManagementAndcontrollingITProjects\HNO\logs\probe_stderr.log
+[2026-07-27 13:01:07] [ERROR] ScriptStackTrace: at Start-Installation, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 376
 at Invoke-Main, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 641
 at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 667
 at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 668
-[2026-07-27 11:26:13] [INFO] UI: خطا در نصب:
-پایتون نصب شد اما فایل اجرایی در مسیر مورد انتظار یافت نشد: D:\UT\ManagementAndcontrollingITProjects\HNO\python\python.exe
-[2026-07-27 11:26:22] [INFO] Exiting with code 1
+[2026-07-27 13:01:07] [INFO] UI: خطا در نصب:
+اجرای پایتون با خطا مواجه شد. جزئیات در D:\UT\ManagementAndcontrollingITProjects\HNO\logs\probe_stderr.log
+[2026-07-27 13:01:22] [INFO] Exiting with code 1
