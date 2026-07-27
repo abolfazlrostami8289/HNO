@@ -333,18 +333,12 @@ function Start-Installation {
             #   - needs no administrator rights
             #   - never touches the Windows PATH (project constraint)
             #   - gives us a deterministic, known-good interpreter path
-            $pyArgs = @(
-                '/quiet'
-                'InstallAllUsers=0'
-                'PrependPath=0'
-                'AssociateFiles=0'
-                'Shortcuts=0'
-                'Include_test=0'
-                'Include_launcher=0'
-                'Include_doc=0'
-                "TargetDir=$PythonDir"
-            )
-            $code = Invoke-Tracked -FilePath $pyInstaller.FullName -Arguments $pyArgs -TimeoutSeconds 900
+            $pyArgString = "/quiet InstallAllUsers=0 PrependPath=0 AssociateFiles=0 Shortcuts=0 Include_test=0 Include_launcher=0 Include_doc=0 `"TargetDir=$PythonDir`""
+            Write-Log "EXEC: `"$($pyInstaller.FullName)`" $pyArgString"
+
+            $proc = Start-Process -FilePath $pyInstaller.FullName -ArgumentList $pyArgString -Wait -PassThru -NoNewWindow
+            $code = $proc.ExitCode
+
             if ($code -ne 0 -and $code -ne 3010) {
                 throw "نصب پایتون با خطا مواجه شد. کد خطا: $code"
             }
