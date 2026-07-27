@@ -316,54 +316,14 @@ function Start-Installation {
     # STEP 4 — Locate / install Python  (per-user, NO PATH modification)
     # -------------------------------------------------------------------------
     Update-UI '۷. آماده‌سازی مفسر پایتون...' 18
-    $PythonExe = $null
 
-    $bundledPython = Join-Path $PythonDir 'python.exe'
-    if (Test-Path -LiteralPath $bundledPython) {
-        $PythonExe = $bundledPython
-        Write-Log "Using previously installed bundled Python: $PythonExe"
+    $PythonExe = Join-Path $InstallersDir 'python\python.exe'
+
+    if (-not (Test-Path -LiteralPath $PythonExe)) {
+        throw ("پایتون یافت نشد. نسخه پرتابل پایتون باید در مسیر زیر قرار داشته باشد:`n$PythonExe")
     }
 
-    if (-not $PythonExe -and -not $UseSystemPython) {
-        $pyInstaller = Get-ChildItem -LiteralPath $InstallersDir -Filter 'python-*.exe' -File -ErrorAction SilentlyContinue |
-                       Select-Object -First 1
-        if ($pyInstaller) {
-            Update-UI '۸. نصب پایتون به صورت پنهان و محلی. لطفاً صبور باشید...' 20
-            # InstallAllUsers=0 + PrependPath=0 + explicit TargetDir:
-            #   - needs no administrator rights
-            #   - never touches the Windows PATH (project constraint)
-            #   - gives us a deterministic, known-good interpreter path
-            $pyArgString = "/quiet InstallAllUsers=0 PrependPath=0 AssociateFiles=0 Shortcuts=0 Include_test=0 Include_launcher=0 Include_doc=0 `"TargetDir=$PythonDir`""
-            Write-Log "EXEC: `"$($pyInstaller.FullName)`" $pyArgString"
-
-            $proc = Start-Process -FilePath $pyInstaller.FullName -ArgumentList $pyArgString -Wait -PassThru -NoNewWindow
-            $code = $proc.ExitCode
-
-            if ($code -ne 0 -and $code -ne 3010) {
-                throw "نصب پایتون با خطا مواجه شد. کد خطا: $code"
-            }
-            if (-not (Test-Path -LiteralPath $bundledPython)) {
-                throw "پایتون نصب شد اما فایل اجرایی در مسیر مورد انتظار یافت نشد: $bundledPython"
-            }
-            $PythonExe = $bundledPython
-            Write-Log "Bundled Python installed at: $PythonExe"
-        }
-    }
-
-    if (-not $PythonExe) {
-        # Fall back to a system interpreter, resolved to an ABSOLUTE path so we
-        # never depend on PATH state at launch time.
-        # Filter out the 0-byte Windows Store aliases which cause "Python was not found" errors.
-        $found = (Get-Command python.exe -All -ErrorAction SilentlyContinue |
-                  Where-Object { $_.Source -notmatch 'WindowsApps' } |
-                  Select-Object -First 1 -ExpandProperty Source)
-        if (-not $found) {
-            throw ("پایتون روی این سیستم یافت نشد و فایل نصب پایتون هم در پوشه installers وجود ندارد.`n" +
-                   "فایل python-3.x.x-amd64.exe را در مسیر زیر قرار دهید:`n$InstallersDir")
-        }
-        $PythonExe = $found
-        Write-Log "Using system Python: $PythonExe" 'WARNING'
-    }
+    Write-Log "Using embedded Python: $PythonExe"
 
     # -------------------------------------------------------------------------
     # STEP 5 — ABI compatibility gate
@@ -407,33 +367,24 @@ function Start-Installation {
         Remove-Item -LiteralPath $VenvDir -Recurse -Force
     }
 
-    $venvOut = Join-Path $LogsDir 'venv_stdout.log'
-    $venvErr = Join-Path $LogsDir 'venv_stderr.log'
-    # --copies avoids reparse-point issues on some Windows configurations.
-    $code = Invoke-Tracked -FilePath $PythonExe `
-                           -Arguments @('-m', 'venv', '--copies', $VenvDir) `
-                           -StdOutFile $venvOut -StdErrFile $venvErr -TimeoutSeconds 600
-    if ($code -ne 0) {
-        throw "ایجاد محیط مجازی با خطا مواجه شد (کد $code).`n$(Get-LogTail $venvErr 15)"
+    $embeddedPythonDir = Split-Path -Parent $PythonExe
+    Write-Log "Copying embedded Python from $embeddedPythonDir to $VenvDir"
+
+    try {
+        New-Item -ItemType Directory -Path $VenvDir -Force | Out-Null
+        Copy-Item -Path "$embeddedPythonDir\*" -Destination $VenvDir -Recurse -Force
+    } catch {
+        throw "کپی کردن محیط پایتون با خطا مواجه شد:`n$($_.Exception.Message)"
     }
 
     # Verify by artifact, not by exit code alone.
-    $VenvPython = Join-Path $VenvDir 'Scripts\python.exe'
+    # Note: embedded python has python.exe in the root, not in Scripts\
+    $VenvPython = Join-Path $VenvDir 'python.exe'
     if (-not (Test-Path -LiteralPath $VenvPython)) {
         throw "محیط مجازی ساخته شد اما python.exe یافت نشد: $VenvPython"
     }
     Write-Log "Virtual environment created successfully: $VenvPython"
 
-    # Guarantee pip exists inside the venv.
-    $code = Invoke-Tracked -FilePath $VenvPython -Arguments @('-m', 'pip', '--version') `
-                           -StdOutFile $ProbeOutLog -StdErrFile $ProbeErrLog -TimeoutSeconds 120
-    if ($code -ne 0) {
-        Write-Log 'pip missing in venv; running ensurepip.' 'WARNING'
-        $code = Invoke-Tracked -FilePath $VenvPython -Arguments @('-m', 'ensurepip', '--default-pip') `
-                               -StdOutFile $ProbeOutLog -StdErrFile $ProbeErrLog -TimeoutSeconds 300
-        if ($code -ne 0) { throw "pip در محیط مجازی قابل استفاده نیست.`n$(Get-LogTail $ProbeErrLog 15)" }
-    }
-    Write-Log "pip: $(Get-LogTail $ProbeOutLog 2)"
     Update-UI '۱۲. محیط مجازی آماده شد.' 36
 
     # -------------------------------------------------------------------------
