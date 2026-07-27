@@ -335,7 +335,7 @@ function Start-Installation {
 
     $probeScript = Join-Path $LogsDir 'probe.py'
     $probeCode = 'import sys;print("cp%d%d" % sys.version_info[:2]);print(sys.version)'
-    Set-Content -Path $probeScript -Value $probeCode -Encoding UTF8
+    [System.IO.File]::WriteAllText($probeScript, $probeCode)
 
     try {
         $code = Invoke-Tracked -FilePath $PythonExe `
