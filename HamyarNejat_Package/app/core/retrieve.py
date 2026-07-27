@@ -1,122 +1,140 @@
 """
-بازیابی اطلاعات از پایگاه دانش محلی و تولید پاسخ
-Retrieval from the local knowledge base and response generation.
+بازیابی اطلاعات و تولید پاسخ - همیار نجات
+--------------------------------------------------------------------------
+مسیر: HamyarNejat_Package/app/core/retrieve.py
+
+تغییر اصلی نسبت به نسخه قبل:
+نسخه پیشین هر خطای بازیابی را با `except Exception: return ""` می‌بلعید.
+نتیجه این بود که اگر Ollama خاموش بود، یا ابعاد بردارها با هم نمی‌خواند، یا
+جدول پایگاه دانش وجود نداشت، مدل زبانی بدون هیچ منبعی پاسخ می‌داد و کاربر
+هرگز متوجه نمی‌شد که جستجو در پایگاه دانش اصلاً انجام نشده است.
+
+در یک سامانه امداد و نجات این رفتار خطرناک است: کاربر پاسخی می‌بیند که فکر
+می‌کند از دستورالعمل‌های تأییدشده آمده، در حالی که ساخته خود مدل است.
+
+اکنون هر خطا به صورت RetrievalError با پیام فارسی بالا می‌رود تا لایه رابط
+کاربری بتواند آن را به کاربر نشان دهد.
 """
 
 import os
-import logging
-
 import lancedb
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.llms import Ollama
 
 from core.config import (
-    OLLAMA_BASE_URL,
-    EMBED_MODEL,
-    LLM_MODEL,
-    KEEP_ALIVE,
-    REQUEST_TIMEOUT,
-    NUM_CTX,
-    TOP_K,
+    DB_PATH,
     TABLE_NAME,
     CATEGORY_MAPPING,
+    RETRIEVAL_TOP_K,
+    get_embedder,
+    get_llm,
 )
 
-logger = logging.getLogger(__name__)
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lancedb_data")
+# ===========================================================================
+# استثناها
+# ===========================================================================
+class HamyarError(Exception):
+    """
+    پایه تمام خطاهای برنامه.
 
+    message          : پیام فارسی و قابل فهم برای کاربر نهایی
+    technical_detail : متن انگلیسی خطای اصلی، فقط برای لاگ و عیب‌یابی
+    """
 
-class RetrievalError(Exception):
-    """پایگاه دانش در دسترس نیست یا جستجو با خطا مواجه شد."""
-
-
-class GenerationError(Exception):
-    """ارتباط با موتور هوش مصنوعی محلی برقرار نشد."""
-
-
-# -----------------------------------------------------------------------------
-# Clients
-#
-# These are module-level singletons. Building a new client per call was cheap
-# but meant base_url, timeout and keep_alive had to be repeated in three places
-# and were in fact omitted everywhere, so every call used langchain's default
-# of http://localhost:11434 with a short timeout.
-# -----------------------------------------------------------------------------
-_embedder = None
-_llm = None
+    def __init__(self, message: str, technical_detail: str = ""):
+        super().__init__(message)
+        self.message = message
+        self.technical_detail = technical_detail
 
 
-def get_embedder() -> OllamaEmbeddings:
-    global _embedder
-    if _embedder is None:
-        _embedder = OllamaEmbeddings(
-            model=EMBED_MODEL,
-            base_url=OLLAMA_BASE_URL,
-        )
-    return _embedder
+class RetrievalError(HamyarError):
+    """خطا در جستجو و بازیابی اطلاعات از پایگاه دانش."""
 
 
-def get_llm() -> Ollama:
-    global _llm
-    if _llm is None:
-        _llm = Ollama(
-            model=LLM_MODEL,
-            base_url=OLLAMA_BASE_URL,
-            keep_alive=KEEP_ALIVE,
-            timeout=REQUEST_TIMEOUT,
-            num_ctx=NUM_CTX,
-            temperature=0.2,  # low: emergency guidance should not be creative
-        )
-    return _llm
+class GenerationError(HamyarError):
+    """خطا در تولید پاسخ توسط مدل زبانی."""
 
 
-# -----------------------------------------------------------------------------
-# Retrieval
-# -----------------------------------------------------------------------------
+# ===========================================================================
+# بازیابی اطلاعات
+# ===========================================================================
 def retrieve_context(query: str, category: str, top_k: int = None) -> str:
     """
-    واکشی اطلاعات با استفاده از فیلتر متادیتا (Pre-filtering).
+    جستجوی برداری در پایگاه دانش با فیلتر دسته‌بندی.
 
-    CHANGED: this function no longer swallows exceptions and returns "".
-    Silently returning empty context caused the assistant to answer emergency
-    questions with no grounding while appearing to work normally. Failures now
-    raise RetrievalError so the UI can tell the user the knowledge base is
-    unavailable.
+    خروجی: متن مرجع یافت‌شده. اگر نتیجه‌ای نبود، رشته خالی برمی‌گرداند
+            (این خطا نیست — یعنی در این دسته چیزی پیدا نشد).
+
+    استثنا: RetrievalError در هر حالت خرابی.
     """
     if top_k is None:
-        top_k = TOP_K
+        top_k = RETRIEVAL_TOP_K
 
+    # --- ۱. اعتبارسنجی دسته‌بندی --------------------------------------
     category_en = CATEGORY_MAPPING.get(category)
     if not category_en:
-        raise RetrievalError(f"دسته‌بندی نامعتبر است: {category}")
+        raise RetrievalError(
+            "دسته‌بندی انتخاب‌شده معتبر نیست.",
+            f"Unknown category label: {category!r}",
+        )
 
+    # --- ۲. وجود پایگاه داده ------------------------------------------
     if not os.path.isdir(DB_PATH):
         raise RetrievalError(
-            "پایگاه دانش یافت نشد. لطفاً ابتدا فرآیند ingest اجرا شود."
+            "پایگاه دانش ساخته نشده است. لطفاً با پشتیبانی تماس بگیرید.",
+            f"LanceDB directory not found: {DB_PATH}",
         )
 
     try:
         db = lancedb.connect(DB_PATH)
     except Exception as exc:
-        logger.exception("LanceDB connection failed")
-        raise RetrievalError("اتصال به پایگاه دانش برقرار نشد.") from exc
-
-    if TABLE_NAME not in db.table_names():
         raise RetrievalError(
-            "جدول پایگاه دانش وجود ندارد. لطفاً ابتدا فرآیند ingest اجرا شود."
-        )
-
-    table = db.open_table(TABLE_NAME)
-
-    try:
-        query_vector = get_embedder().embed_query(query)
-    except Exception as exc:
-        logger.exception("Embedding failed")
-        raise RetrievalError(
-            f"تبدیل سوال به بردار ممکن نشد. مدل «{EMBED_MODEL}» در دسترس نیست."
+            "اتصال به پایگاه دانش ممکن نشد.",
+            f"lancedb.connect failed: {exc}",
         ) from exc
 
+    try:
+        table_names = db.table_names()
+    except Exception as exc:
+        raise RetrievalError(
+            "خواندن پایگاه دانش ممکن نشد.",
+            f"db.table_names failed: {exc}",
+        ) from exc
+
+    if TABLE_NAME not in table_names:
+        raise RetrievalError(
+            "پایگاه دانش خالی است و هنوز مقاله‌ای پردازش نشده است.",
+            f"Table {TABLE_NAME!r} missing. Available: {table_names}",
+        )
+
+    try:
+        table = db.open_table(TABLE_NAME)
+    except Exception as exc:
+        raise RetrievalError(
+            "باز کردن پایگاه دانش ممکن نشد.",
+            f"open_table failed: {exc}",
+        ) from exc
+
+    # --- ۳. تبدیل پرسش به بردار ---------------------------------------
+    # اگر موتور محلی خاموش باشد یا مدل bge-m3 موجود نباشد، خطا اینجا رخ می‌دهد.
+    try:
+        embedder = get_embedder()
+        query_vector = embedder.embed_query(query)
+    except Exception as exc:
+        raise RetrievalError(
+            "موتور محلی هوش مصنوعی پاسخ نمی‌دهد. "
+            "لطفاً برنامه را ببندید و دوباره اجرا کنید.",
+            f"embed_query failed: {exc}",
+        ) from exc
+
+    if not query_vector:
+        raise RetrievalError(
+            "تبدیل سوال به بردار جستجو ناموفق بود.",
+            "embed_query returned an empty vector",
+        )
+
+    # --- ۴. جستجوی برداری ---------------------------------------------
+    # ناسازگاری ابعاد بردار (مثلاً اگر ingest با مدل دیگری اجرا شده باشد)
+    # دقیقاً همین‌جا خودش را نشان می‌دهد.
     try:
         results = (
             table.search(query_vector)
@@ -125,103 +143,112 @@ def retrieve_context(query: str, category: str, top_k: int = None) -> str:
             .to_list()
         )
     except Exception as exc:
-        # The most likely cause is a dimension mismatch: the table was built
-        # with a different embedding model than the one querying it.
-        logger.exception("Vector search failed")
-        raise RetrievalError(
-            "جستجو در پایگاه دانش با خطا مواجه شد. "
-            "احتمالاً مدل بردارساز با مدل زمان ساخت پایگاه داده متفاوت است."
-        ) from exc
+        detail = str(exc)
+        if "dimension" in detail.lower() or "shape" in detail.lower():
+            user_msg = (
+                "پایگاه دانش با نسخه دیگری از مدل ساخته شده و با نسخه فعلی سازگار نیست. "
+                "لازم است پایگاه دانش دوباره ساخته شود."
+            )
+        else:
+            user_msg = "جستجو در پایگاه دانش با خطا مواجه شد."
+        raise RetrievalError(user_msg, f"vector search failed: {detail}") from exc
 
+    # --- ۵. ترکیب نتایج ------------------------------------------------
     if not results:
         return ""
 
-    return "\n\n---\n\n".join(res["text"] for res in results)
+    chunks = [r.get("text", "") for r in results if r.get("text")]
+    return "\n\n---\n\n".join(chunks)
 
 
-# -----------------------------------------------------------------------------
-# Prompting
-# -----------------------------------------------------------------------------
-_SYSTEM_PREAMBLE = """شما یک دستیار هوش مصنوعی مستقل برای مدیریت بحران و شرایط اضطراری هستید (همیار نجات آفلاین).
-لطفاً تنها با استفاده از اطلاعات مرجع زیر به سوال کاربر پاسخ دقیق و کاربردی بدهید.
-اگر پاسخ در اطلاعات مرجع وجود نداشت، راهنمایی‌های کلی و ایمن ارائه دهید اما حتماً ذکر کنید که این بخش از اطلاعات در پایگاه داده تخصصی شما نیست."""
+# ===========================================================================
+# ساخت پرامپت
+# ===========================================================================
+_SYSTEM_PREAMBLE = (
+    "شما یک دستیار هوش مصنوعی مستقل برای مدیریت بحران و شرایط اضطراری هستید "
+    "(همیار نجات آفلاین).\n"
+    "لطفاً تنها با استفاده از اطلاعات مرجع زیر به سوال کاربر پاسخ دقیق و کاربردی بدهید.\n"
+    "اگر پاسخ در اطلاعات مرجع وجود نداشت، راهنمایی‌های کلی و ایمن ارائه دهید "
+    "اما حتماً ذکر کنید که این بخش از اطلاعات در پایگاه داده تخصصی شما نیست."
+)
 
-_NO_CONTEXT_NOTE = "(هیچ سند مرتبطی در پایگاه دانش یافت نشد.)"
 
+def _build_prompt(query: str, context: str, history_messages: list = None) -> str:
+    """ساخت پرامپت واحد برای هر دو حالت invoke و stream."""
+    parts = [_SYSTEM_PREAMBLE, ""]
 
-def _build_prompt(query: str, context: str, history_str: str = "") -> str:
-    parts = [_SYSTEM_PREAMBLE, "", "اطلاعات مرجع:", context or _NO_CONTEXT_NOTE]
-    if history_str:
-        parts += ["", "تاریخچه مکالمه:", history_str]
-    parts += ["", f"سوال کاربر: {query}", "پاسخ:"]
+    if context:
+        parts.append("اطلاعات مرجع:")
+        parts.append(context)
+    else:
+        parts.append("اطلاعات مرجع: (موردی در پایگاه دانش یافت نشد)")
+    parts.append("")
+
+    if history_messages:
+        # فقط چند نوبت آخر نگه داشته می‌شود تا پنجره متن مدل پر نشود.
+        recent = history_messages[-6:]
+        parts.append("تاریخچه مکالمه:")
+        for msg in recent:
+            role_fa = "کاربر" if msg.get("role") == "user" else "دستیار"
+            parts.append(f"{role_fa}: {msg.get('content', '')}")
+        parts.append("")
+
+    parts.append(f"سوال کاربر: {query}")
+    parts.append("پاسخ:")
     return "\n".join(parts)
 
 
-def _format_history(history_messages: list, max_turns: int = 6) -> str:
+# ===========================================================================
+# تولید پاسخ - حالت جریانی (streaming)
+# ===========================================================================
+def stream_response_with_history(query: str, context: str, history_messages: list = None):
     """
-    Only the most recent turns are kept. The previous version replayed the
-    entire session into every prompt, so a long conversation silently
-    overflowed the context window and pushed the retrieved documents out.
+    تولید پاسخ به صورت جریانی. هر قطعه متن به محض آماده شدن بازگردانده می‌شود.
+
+    استفاده:
+        for token in stream_response_with_history(q, ctx, hist):
+            ...
+
+    دلیل اهمیت: روی سخت‌افزار بدون کارت گرافیک، یک مدل ۸ میلیاردی ممکن است
+    ۳۰ تا ۱۲۰ ثانیه طول بکشد. نمایش تدریجی متن باعث می‌شود کاربر بداند سامانه
+    کار می‌کند — که در شرایط اضطراری اهمیت زیادی دارد.
+
+    استثنا: GenerationError
     """
-    recent = history_messages[-max_turns:] if history_messages else []
-    lines = []
-    for msg in recent:
-        role_fa = "کاربر" if msg.get("role") == "user" else "دستیار"
-        lines.append(f"{role_fa}: {msg.get('content', '')}")
-    return "\n".join(lines)
+    prompt = _build_prompt(query, context, history_messages)
+
+    try:
+        llm = get_llm()
+    except Exception as exc:
+        raise GenerationError(
+            "موتور محلی هوش مصنوعی در دسترس نیست.",
+            f"get_llm failed: {exc}",
+        ) from exc
+
+    try:
+        for chunk in llm.stream(prompt):
+            # بسته به نسخه langchain، خروجی می‌تواند رشته یا شیء باشد.
+            if chunk is None:
+                continue
+            text = chunk if isinstance(chunk, str) else getattr(chunk, "content", str(chunk))
+            if text:
+                yield text
+    except Exception as exc:
+        raise GenerationError(
+            "تولید پاسخ توسط مدل زبانی با خطا مواجه شد. "
+            "لطفاً دوباره تلاش کنید.",
+            f"llm.stream failed: {exc}",
+        ) from exc
 
 
-# -----------------------------------------------------------------------------
-# Generation
-# -----------------------------------------------------------------------------
+# ===========================================================================
+# تولید پاسخ - حالت یکجا (سازگاری با کد قدیمی)
+# ===========================================================================
+def generate_response_with_history(query: str, context: str, history_messages: list = None) -> str:
+    """نسخه غیرجریانی. برای سازگاری با کدهای قبلی نگه داشته شده است."""
+    return "".join(stream_response_with_history(query, context, history_messages))
+
+
 def generate_response(query: str, context: str) -> str:
-    try:
-        return get_llm().invoke(_build_prompt(query, context))
-    except Exception as exc:
-        logger.exception("Generation failed")
-        raise GenerationError(
-            f"ارتباط با موتور هوش مصنوعی محلی برقرار نشد. مدل «{LLM_MODEL}» در دسترس نیست."
-        ) from exc
-
-
-def generate_response_with_history(query: str, context: str, history_messages: list) -> str:
-    prompt = _build_prompt(query, context, _format_history(history_messages))
-    try:
-        return get_llm().invoke(prompt)
-    except Exception as exc:
-        logger.exception("Generation failed")
-        raise GenerationError(
-            f"ارتباط با موتور هوش مصنوعی محلی برقرار نشد. مدل «{LLM_MODEL}» در دسترس نیست."
-        ) from exc
-
-
-def stream_response_with_history(query: str, context: str, history_messages: list):
-    """
-    نسخه جریانی برای نمایش تدریجی پاسخ.
-    Token-streaming variant for use with st.write_stream().
-
-    On CPU-only hardware an 8B model can take 30-120 seconds per answer. A
-    spinner for that long reads as a freeze; streaming shows progress
-    immediately. Wire this into pages/1_Chat.py when you are ready.
-    """
-    prompt = _build_prompt(query, context, _format_history(history_messages))
-    try:
-        for chunk in get_llm().stream(prompt):
-            yield chunk
-    except Exception as exc:
-        logger.exception("Streaming generation failed")
-        raise GenerationError(
-            f"ارتباط با موتور هوش مصنوعی محلی برقرار نشد. مدل «{LLM_MODEL}» در دسترس نیست."
-        ) from exc
-
-
-def check_health() -> tuple:
-    """
-    بررسی در دسترس بودن موتور محلی. برای نمایش وضعیت در نوار کناری.
-    Returns (ok: bool, message: str).
-    """
-    try:
-        get_embedder().embed_query("تست")
-        return True, "موتور محلی در دسترس است."
-    except Exception as exc:
-        return False, f"موتور محلی در دسترس نیست: {exc}"
+    """نسخه بدون تاریخچه."""
+    return generate_response_with_history(query, context, None)

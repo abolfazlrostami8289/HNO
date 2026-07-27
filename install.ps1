@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     نصب‌کننده گرافیکی و آفلاین همیار نجات (نسخه اصلاح‌شده)

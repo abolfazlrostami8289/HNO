@@ -1,78 +1,119 @@
 """
 پیکربندی مرکزی همیار نجات
-Central configuration for Hamyar Nejat.
+--------------------------------------------------------------------------
+تمام نام مدل‌ها، مسیرها و تنظیمات اتصال به Ollama فقط در همین فایل تعریف
+می‌شوند. هیچ ماژول دیگری نباید نام مدل را به صورت رشته ثابت بنویسد.
 
-تمام نام مدل‌ها و آدرس سرور محلی فقط در همین فایل تعریف می‌شوند.
-Every model name and the local server address are defined ONLY here.
+دلیل: پیش از این ingest.py و retrieve.py هر کدام نام مدل embedding را جداگانه
+تعریف کرده بودند ("bge-m3" در برابر "bge-m3:latest"). اگر این دو با هم فرق
+کنند، بردارهای ساخته‌شده در زمان ingest با بردار پرسش هم‌بعد نخواهند بود و
+جستجو با خطا شکست می‌خورد — خطایی که در retrieve.py گرفته و نادیده گرفته
+می‌شد، پس کاربر هرگز متوجه نمی‌شد که بازیابی اطلاعات کار نکرده است.
 
-Why this file exists
---------------------
-`ingest.py` embedded documents with "bge-m3" while `retrieve.py` queried with
-"bge-m3:latest". Ollama normally resolves a bare name to the ":latest" tag, so
-the two agree by luck rather than by design. If the shipped model is ever
-tagged anything else (for example "bge-m3:567m"), the bare name resolves to a
-manifest that does not exist and retrieval fails at runtime.
-
-Worse, `retrieve_context()` swallows that exception and returns an empty
-string, so the assistant answers with no grounding at all and nobody is told
-the knowledge base was skipped. In an emergency-response tool that is the most
-dangerous possible failure mode: confident, ungrounded answers.
-
-Defining the names once removes the possibility of drift.
+مسیر این فایل: HamyarNejat_Package/app/core/config.py
 """
 
 import os
 
-# -----------------------------------------------------------------------------
-# Ollama endpoint
-# -----------------------------------------------------------------------------
-# 127.0.0.1 rather than localhost: on Windows, "localhost" can resolve to ::1
-# first while Ollama is bound to IPv4, costing a failed connection attempt on
-# every single call.
-OLLAMA_BASE_URL = os.getenv("HAMYAR_OLLAMA_URL", "http://127.0.0.1:11434")
+# ---------------------------------------------------------------------------
+# مسیرها
+# BASE_DIR = HamyarNejat_Package/app
+# ---------------------------------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# -----------------------------------------------------------------------------
-# Model names
-# -----------------------------------------------------------------------------
-# Tags are explicit. Do not rely on ":latest" resolution.
-# These MUST match the manifests shipped in installers/models/manifests/ and the
-# $RequiredModels list in run.ps1.
-EMBED_MODEL = os.getenv("HAMYAR_EMBED_MODEL", "bge-m3:latest")
-LLM_MODEL = os.getenv("HAMYAR_LLM_MODEL", "aya-expanse:8b")
+DB_PATH = os.path.join(BASE_DIR, "lancedb_data")
+KNOWLEDGE_DIR = os.path.join(BASE_DIR, "knowledge-files")
+HISTORY_FILE = os.path.join(BASE_DIR, "chat_history.json")
 
-# -----------------------------------------------------------------------------
-# Runtime behaviour
-# -----------------------------------------------------------------------------
-# Keep the model resident between questions. Ollama's default is 5 minutes,
-# which means a user who pauses to read an answer pays the full multi-second
-# reload cost on their next question.
-KEEP_ALIVE = os.getenv("HAMYAR_KEEP_ALIVE", "30m")
-
-# Generation timeout in seconds. An 8B model on CPU-only hardware is slow;
-# this needs to be generous or long answers get cut off mid-sentence.
-REQUEST_TIMEOUT = int(os.getenv("HAMYAR_TIMEOUT", "600"))
-
-# Context window passed to Ollama. Retrieved context plus history plus the
-# Persian system prompt can be long; the default of 2048 silently truncates.
-NUM_CTX = int(os.getenv("HAMYAR_NUM_CTX", "8192"))
-
-# Number of knowledge-base chunks retrieved per question.
-TOP_K = int(os.getenv("HAMYAR_TOP_K", "3"))
-
-# -----------------------------------------------------------------------------
-# Knowledge base
-# -----------------------------------------------------------------------------
 TABLE_NAME = "knowledge_base"
 
-# Folder holding the source Markdown articles, relative to the app directory.
-# `ingest.py` and `retrieve.py` previously disagreed about this too
-# ("Articles" vs "knowledge-files").
-ARTICLES_DIRNAME = os.getenv("HAMYAR_ARTICLES_DIR", "knowledge-files")
+# ---------------------------------------------------------------------------
+# مدل‌ها — تنها محل تعریف
+# این نام‌ها باید دقیقاً با خروجی `ollama list` و با آرایه RequiredModels در
+# run.ps1 یکسان باشند.
+# ---------------------------------------------------------------------------
+EMBED_MODEL = "bge-m3"
+LLM_MODEL = "aya-expanse:8b"
 
-# UI label -> metadata value used for pre-filtering in LanceDB.
+# ---------------------------------------------------------------------------
+# اتصال به Ollama
+# از 127.0.0.1 استفاده می‌شود نه localhost: در ویندوز localhost ممکن است ابتدا
+# به ::1 ترجمه شود در حالی که سرور روی IPv4 گوش می‌دهد.
+# run.ps1 متغیر OLLAMA_HOST را تنظیم می‌کند؛ اینجا فقط آن را می‌خوانیم.
+# ---------------------------------------------------------------------------
+_raw_host = os.environ.get("OLLAMA_HOST", "127.0.0.1:11434").strip()
+if _raw_host.startswith("http://") or _raw_host.startswith("https://"):
+    OLLAMA_BASE_URL = _raw_host.rstrip("/")
+else:
+    OLLAMA_BASE_URL = f"http://{_raw_host}"
+
+# اندازه پنجره متن. aya-expanse از 8192 پشتیبانی می‌کند.
+NUM_CTX = 8192
+TEMPERATURE = 0.2
+
+RETRIEVAL_TOP_K = 3
+
+# نگاشت برچسب‌های رابط کاربری به مقدار category در متادیتای YAML
 CATEGORY_MAPPING = {
     "فوریت‌های پزشکی": "medical_emergency",
     "فوریت‌های فنی": "technical_emergency",
     "فوریت‌های روانشناسی": "psychological_emergency",
     "فوریت‌های امدادی": "rescue_emergency",
 }
+
+
+def get_embedder():
+    """
+    ساخت مدل embedding. هم ingest و هم retrieve باید از همین تابع استفاده کنند
+    تا امکان ناهماهنگی بین آن دو از بین برود.
+    """
+    from langchain_community.embeddings import OllamaEmbeddings
+
+    return OllamaEmbeddings(
+        model=EMBED_MODEL,
+        base_url=OLLAMA_BASE_URL,
+    )
+
+
+def get_llm():
+    """ساخت مدل زبانی با تنظیمات یکسان در تمام برنامه."""
+    from langchain_community.llms import Ollama
+
+    return Ollama(
+        model=LLM_MODEL,
+        base_url=OLLAMA_BASE_URL,
+        temperature=TEMPERATURE,
+        num_ctx=NUM_CTX,
+    )
+
+
+def check_ollama_ready(timeout: float = 3.0):
+    """
+    بررسی در دسترس بودن Ollama و موجود بودن مدل‌های لازم.
+
+    خروجی: (ok: bool, message: str)
+
+    این تابع برای نمایش وضعیت در نوار کناری استفاده می‌شود تا اگر موتور محلی
+    خاموش باشد، کاربر به جای یک traceback انگلیسی، پیام فارسی روشن ببیند.
+    """
+    import json
+    import urllib.request
+
+    try:
+        with urllib.request.urlopen(f"{OLLAMA_BASE_URL}/api/tags", timeout=timeout) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return False, "موتور محلی هوش مصنوعی در دسترس نیست. لطفاً برنامه را ببندید و دوباره اجرا کنید."
+
+    available = [m.get("name", "") for m in data.get("models", [])]
+
+    missing = []
+    for needed in (EMBED_MODEL, LLM_MODEL):
+        bare = needed.split(":")[0]
+        if not any(name == needed or name.startswith(bare + ":") for name in available):
+            missing.append(needed)
+
+    if missing:
+        return False, "مدل‌های زبانی زیر یافت نشدند: " + "، ".join(missing)
+
+    return True, "آماده"
