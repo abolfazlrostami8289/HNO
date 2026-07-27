@@ -47,11 +47,6 @@ $PipErrLog   = Join-Path $LogsDir 'pip_stderr.log'
 $ProbeOutLog = Join-Path $LogsDir 'probe_stdout.log'
 $ProbeErrLog = Join-Path $LogsDir 'probe_stderr.log'
 
-$stopLnk = $wsh.CreateShortcut((Join-Path $desktop 'Hamyar Nejat - Stop.lnk'))
-$stopLnk.TargetPath       = (Join-Path $BaseDir 'Stop_Hamyar.bat')
-$stopLnk.WorkingDirectory = $BaseDir
-$stopLnk.Save()
-
 if (-not (Test-Path $LogsDir)) { New-Item -ItemType Directory -Path $LogsDir -Force | Out-Null }
 
 # Candidate locations for requirements.txt, in priority order.
@@ -618,14 +613,23 @@ fastReruns = true
         $lnkPath  = Join-Path $desktop 'Hamyar Nejat.lnk'
         $icon     = Join-Path $BaseDir 'logo.ico'
         $wsh      = New-Object -ComObject WScript.Shell
+
         $lnk      = $wsh.CreateShortcut($lnkPath)
         $lnk.TargetPath       = $launcher
         $lnk.WorkingDirectory = $BaseDir
         $lnk.Description      = 'همیار نجات - دستیار هوشمند آفلاین'
         if (Test-Path -LiteralPath $icon) { $lnk.IconLocation = $icon }
         $lnk.Save()
+
+        # Stop shortcut
+        $stopLnkPath = Join-Path $desktop 'Hamyar Nejat - Stop.lnk'
+        $stopLnk = $wsh.CreateShortcut($stopLnkPath)
+        $stopLnk.TargetPath       = (Join-Path $BaseDir 'Stop_Hamyar.bat')
+        $stopLnk.WorkingDirectory = $BaseDir
+        $stopLnk.Save()
+
         [System.Runtime.InteropServices.Marshal]::ReleaseComObject($wsh) | Out-Null
-        Write-Log "Shortcut created: $lnkPath"
+        Write-Log "Shortcut created: $lnkPath and $stopLnkPath"
     }
 
     Update-UI '۲۲. نصب با موفقیت به پایان رسید.' 100 'LimeGreen' `
