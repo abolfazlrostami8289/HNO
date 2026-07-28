@@ -361,6 +361,40 @@ function Start-Installation {
 
     Update-UI '۱۲. محیط مجازی آماده شد.' 36
     
+    # =========================================================================
+    # مرحله ۱۲.۵: تزریق و نصب آفلاین هسته Pip در محیط مجازی
+    # =========================================================================
+    Update-UI '۱۲.۵. در حال آماده‌سازی و نصب هسته Pip...' 45
+    Write-Log "UI: ۱۲.۵. در حال آماده‌سازی و نصب هسته Pip..." 'INFO'
+
+    $PipWheel = Get-ChildItem -Path $LibrariesDir -Filter "pip-*.whl" | Select-Object -First 1
+    if (-not $PipWheel) {
+        Write-Log "ERROR: pip wheel file not found in $LibrariesDir" 'ERROR'
+        throw "فایل نصب pip در پوشه libraries پیدا نشد!"
+    }
+
+    Write-Log "Bootstrapping pip using $($PipWheel.FullName)..." 'INFO'
+
+    $bootstrapArgs = @(
+        "$($PipWheel.FullName)/pip", "install", "pip", "setuptools",
+        "--no-index",
+        "--find-links", $LibrariesDir,
+        "--no-warn-script-location"
+    )
+
+    $bootstrapCode = Invoke-Tracked -FilePath $VenvPython -Arguments $bootstrapArgs `
+                                    -StdOutFile $PipOutLog -StdErrFile $PipErrLog -TimeoutSeconds 300
+
+    if ($bootstrapCode -ne 0) {
+        $errTail = Get-LogTail $PipErrLog 30
+        $outTail = Get-LogTail $PipOutLog 30
+        Write-Log "Pip bootstrap stderr tail:`n$errTail" 'ERROR'
+        Write-Log "Pip bootstrap stdout tail:`n$outTail" 'ERROR'
+        throw "نصب اولیه pip با خطا مواجه شد."
+    }
+    Write-Log "Pip successfully bootstrapped!" 'INFO'
+    # =========================================================================
+
     # -------------------------------------------------------------------------
     # STEP 7 — OFFLINE PIP INSTALL
     # -------------------------------------------------------------------------
@@ -542,39 +576,6 @@ fastReruns = true
     $manifest | ConvertTo-Json -Depth 4 | Set-Content -Path $ManifestFile -Encoding UTF8
     Write-Log "Manifest written: $ManifestFile"
 
-    # =========================================================================
-    # مرحله ۱۲.۵: تزریق و نصب آفلاین هسته Pip در محیط مجازی
-    # =========================================================================
-    Update-UI '۱۲.۵. در حال آماده‌سازی و نصب هسته Pip...' 45
-    Write-Log "UI: ۱۲.۵. در حال آماده‌سازی و نصب هسته Pip..." 'INFO'
-    
-    $PipWheel = Get-ChildItem -Path $LibrariesDir -Filter "pip-*.whl" | Select-Object -First 1
-    if (-not $PipWheel) {
-        Write-Log "ERROR: pip wheel file not found in $LibrariesDir" 'ERROR'
-        throw "فایل نصب pip در پوشه libraries پیدا نشد!"
-    }
-    
-    Write-Log "Bootstrapping pip using $($PipWheel.FullName)..." 'INFO'
-    
-    # اجرای مستقیم فایل whl با پایتون
-    $VenvPython = Join-Path $BaseDir "venv\python.exe"
-    $bootstrapArgs = @(
-        "$($PipWheel.FullName)/pip", "install", "pip", "setuptools",
-        "--no-index",
-        "--find-links", $LibrariesDir,
-        "--no-warn-script-location"
-    )
-    
-    Write-Log "EXEC Bootstrap: $VenvPython $($bootstrapArgs -join ' ')" 'INFO'
-    $bootstrapProcess = Start-Process -FilePath $VenvPython -ArgumentList $bootstrapArgs -Wait -NoNewWindow -PassThru
-    
-    if ($bootstrapProcess.ExitCode -ne 0) {
-        Write-Log "ERROR: Pip bootstrap failed with exit code $($bootstrapProcess.ExitCode)" 'ERROR'
-        throw "نصب اولیه pip با خطا مواجه شد."
-    }
-    Write-Log "Pip successfully bootstrapped!" 'INFO'
-    # =========================================================================
-    
     # -------------------------------------------------------------------------
     # STEP 13 — Desktop shortcut (current user; installer is NOT elevated)
     # -------------------------------------------------------------------------
