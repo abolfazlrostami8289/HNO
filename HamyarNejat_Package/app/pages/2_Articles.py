@@ -96,10 +96,8 @@ st.markdown(f"""
 st.write("در این بخش می‌توانید به صورت مستقیم و بدون هوش مصنوعی به دستورالعمل‌های حیاتی پزشکی دسترسی داشته باشید.")
 st.divider()
 
-knowledge_dir = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)), 
-    "Articles"
-)
+from core.config import ARTICLES_DIR
+knowledge_dir = ARTICLES_DIR
 
 def get_article_mappings(directory):
     mappings = {}
