@@ -4,12 +4,7 @@ from langchain_community.embeddings import OllamaEmbeddings
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
 # ایمپورت کردن تمام متغیرهای مورد نیاز از فایل کانفیگ به صورت صحیح در بالای فایل
-from core.config import EMBED_MODEL, OLLAMA_BASE_URL, ARTICLES_DIRNAME, TABLE_NAME
-
-# تعیین مسیرها
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-DB_PATH = os.path.join(BASE_DIR, "lancedb_data")
-ARTICLES_DIR = os.path.join(BASE_DIR, ARTICLES_DIRNAME)
+from core.config import EMBED_MODEL, OLLAMA_BASE_URL, TABLE_NAME, DB_PATH, ARTICLES_DIR
 
 def get_embeddings_model():
     """Returns the local Ollama embedding model."""

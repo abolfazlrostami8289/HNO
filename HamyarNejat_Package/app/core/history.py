@@ -3,7 +3,7 @@ import json
 import uuid
 from datetime import datetime
 
-HISTORY_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "chat_history.json")
+from core.config import HISTORY_FILE
 
 def load_all_sessions():
     if not os.path.exists(HISTORY_FILE):
