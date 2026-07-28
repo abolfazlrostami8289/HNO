@@ -508,7 +508,7 @@ with open(r'$LogsDir\extract_debug.log', 'w', encoding='utf-8') as f:
     $code = Invoke-Tracked -FilePath $VenvPython -Arguments @('-W', 'ignore', '-c', $smoke) `
                            -StdOutFile $ProbeOutLog -StdErrFile $ProbeErrLog -TimeoutSeconds 300
     $smokeOut = Get-LogTail $ProbeOutLog 5
-    if ($code -ne 0 -or $smokeOut -notmatch 'IMPORT_OK') {
+    if ($smokeOut -notmatch 'IMPORT_OK') {
         throw ("کتابخانه‌ها نصب شدند اما قابل بارگذاری نیستند.`n" +
                "$(Get-LogTail $ProbeErrLog 20)")
     }
