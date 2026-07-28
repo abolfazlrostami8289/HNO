@@ -18,6 +18,7 @@ This product is a completely offline AI assistant designed for crisis situations
 ## Project Architecture & Directory Structure
 - **`HNO\` (Root Repository)**
   - **`HNO\Articles\`**: Contains the offline article files that the product displays to the user.
+  - **`HNO\data\`**: Contains the application's persistent local data, including `chat_history.json` and the `lancedb_data\` vector database directory, kept separate from the core app package.
   - **`HNO\logs\`**: Stores log files that track events, errors, and successes during the installation and uninstallation processes.
   - **`install.ps1`**: The main PowerShell script responsible for installing the application.
   - **`run.ps1`**: The main PowerShell script responsible for executing/running the application.
@@ -26,6 +27,7 @@ This product is a completely offline AI assistant designed for crisis situations
   - **`app\`**: The frontend directory.
     - `app.py`: The main Streamlit entry point. It acts as the landing page and provides navigation to the Chat and Article sections.
     - **`assets\`**:
+      - **`images\`**: Contains all UI images and icons (e.g., `logo.png`, `icon_home.png`, `icon_chat.png`, `icon_articles.png`, `icon_sidebar_opened.png`).
       - `Vazirmatn-Regular.woff2`: The primary font file used in the application.
     - **`pages\`**:
       - `1_Chat.py`: The offline AI chat interface.

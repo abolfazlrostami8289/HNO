@@ -10,11 +10,11 @@ def get_base64_of_bin_file(bin_file):
         return base64.b64encode(data).decode()
     return ""
 
-logo_path = os.path.join(os.path.dirname(__file__), "logo.png")
+logo_path = os.path.join(os.path.dirname(__file__), "assets", "images", "logo.png")
 
 st.set_page_config(
     page_title="همیار نجات آفلاین",
-    page_icon="logo.png",
+    page_icon=logo_path,
     layout="centered"
 )
 

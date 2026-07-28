@@ -11,13 +11,14 @@ def get_base64_of_bin_file(bin_file):
 
 def setup_custom_sidebar():
     base_dir = os.path.dirname(os.path.dirname(__file__))
+    images_dir = os.path.join(base_dir, "assets", "images")
     
-    logo_path = os.path.join(base_dir, "logo.png")
-    home_icon_path = os.path.join(base_dir, "icon_home.png")
-    chat_icon_path = os.path.join(base_dir, "icon_chat.png")
-    articles_icon_path = os.path.join(base_dir, "icon_articles.png")
-    # اصلاح مسیر: حالا دقیقاً در روت پروژه دنبال عکس می‌گردد
-    sidebar_icon_path = os.path.join(base_dir, "icon_sidebar_opened.png")
+    logo_path = os.path.join(images_dir, "logo.png")
+    home_icon_path = os.path.join(images_dir, "icon_home.png")
+    chat_icon_path = os.path.join(images_dir, "icon_chat.png")
+    articles_icon_path = os.path.join(images_dir, "icon_articles.png")
+    # اصلاح مسیر: حالا در پوشه تصاویر دنبال عکس می‌گردد
+    sidebar_icon_path = os.path.join(images_dir, "icon_sidebar_opened.png")
     
     logo_b64 = get_base64_of_bin_file(logo_path)
     home_b64 = get_base64_of_bin_file(home_icon_path)
