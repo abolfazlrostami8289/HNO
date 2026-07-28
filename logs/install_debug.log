@@ -1,47 +1,50 @@
-﻿[2026-07-28 15:36:40] [INFO] ==========================================================
-[2026-07-28 15:36:40] [INFO] Installation script started.
-[2026-07-28 15:36:40] [INFO] BaseDir      : D:\UT\ManagementAndcontrollingITProjects\HNO
-[2026-07-28 15:36:40] [INFO] PowerShell   : 5.1.26100.8875
-[2026-07-28 15:36:40] [INFO] OS           : Microsoft Windows NT 10.0.26200.0
-[2026-07-28 15:36:40] [INFO] User         : Sejron.com (elevated=False)
-[2026-07-28 15:36:41] [INFO] UI: ۱. بررسی مسیر نصب و فضای دیسک...
-[2026-07-28 15:36:41] [INFO] Free space on D:: 40.13 GB
-[2026-07-28 15:36:41] [INFO] UI: ۲. مسیر نصب معتبر است. فضای آزاد: 40.13 گیگابایت
-[2026-07-28 15:36:41] [INFO] UI: ۳. جستجوی فایل requirements...
-[2026-07-28 15:36:41] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.lock.txt
-[2026-07-28 15:36:41] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.txt
-[2026-07-28 15:36:41] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.lock.txt
-[2026-07-28 15:36:41] [INFO] requirements resolved to: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
-[2026-07-28 15:36:41] [INFO] requirements entries: 4
-[2026-07-28 15:36:41] [INFO] UI: ۴. فایل requirements یافت شد (4 بسته).
-[2026-07-28 15:36:41] [INFO] UI: ۵. بررسی مخزن آفلاین کتابخانه‌ها...
-[2026-07-28 15:36:41] [INFO] Offline packages found: 109 wheels, 109 source archives
-[2026-07-28 15:36:41] [INFO] UI: ۶. تعداد 109 بسته آفلاین آماده است.
-[2026-07-28 15:36:41] [INFO] UI: ۷. آماده‌سازی مفسر پایتون...
-[2026-07-28 15:36:41] [INFO] Using embedded Python: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python\python.exe
-[2026-07-28 15:36:41] [INFO] UI: ۹. رد شدن از بررسی سازگاری نسخه پایتون (طبق تنظیمات دستی)...
-[2026-07-28 15:36:41] [INFO] Skipping Python ABI check as requested. Proceeding to requirements installation...
-[2026-07-28 15:36:41] [INFO] UI: ۱۱. ایجاد محیط مجازی پایتون (venv)...
-[2026-07-28 15:36:41] [INFO] Removing stale venv at D:\UT\ManagementAndcontrollingITProjects\HNO\venv
-[2026-07-28 15:36:41] [INFO] Copying embedded Python from D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python to D:\UT\ManagementAndcontrollingITProjects\HNO\venv
-[2026-07-28 15:36:41] [INFO] Virtual environment created successfully: D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe
-[2026-07-28 15:36:41] [INFO] UI: ۱۲. محیط مجازی آماده شد.
-[2026-07-28 15:36:41] [INFO] UI: ۱۳. نصب آفلاین کتابخانه‌ها. این مرحله چند دقیقه طول می‌کشد...
-[2026-07-28 15:36:41] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe" -m pip install --no-index --find-links D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries --only-binary :all: --no-cache-dir --disable-pip-version-check --no-warn-script-location --no-input --isolated --verbose -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
-[2026-07-28 15:36:41] [INFO] EXIT:  after 0s
-[2026-07-28 15:36:41] [ERROR] pip stderr tail:
-D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe: No module named pip
-[2026-07-28 15:36:42] [ERROR] pip stdout tail:
-
-[2026-07-28 15:36:42] [INFO] فایل دیباگ جامع نصب ساخته شد: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_full_debug.log
-[2026-07-28 15:36:42] [ERROR] INSTALLATION FAILED: نصب کتابخانه‌ها با خطا مواجه شد (کد ).
-لاگ کامل: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_stderr.log
-لطفا فایل pip_full_debug.log را در پوشه لاگ بررسی کنید.
-[2026-07-28 15:36:42] [ERROR] ScriptStackTrace: at Start-Installation, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 417
-at Invoke-Main, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 621
-at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 647
-at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 648
-[2026-07-28 15:36:42] [INFO] UI: خطا در نصب:
-نصب کتابخانه‌ها با خطا مواجه شد (کد ).
-لاگ کامل: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_stderr.log
-لطفا فایل pip_full_debug.log را در پوشه لاگ بررسی کنید.
+﻿[2026-07-28 17:55:09] [INFO] ==========================================================
+[2026-07-28 17:55:09] [INFO] Installation script started.
+[2026-07-28 17:55:09] [INFO] BaseDir      : D:\UT\ManagementAndcontrollingITProjects\HNO
+[2026-07-28 17:55:09] [INFO] PowerShell   : 5.1.26100.8875
+[2026-07-28 17:55:09] [INFO] OS           : Microsoft Windows NT 10.0.26200.0
+[2026-07-28 17:55:09] [INFO] User         : Sejron.com (elevated=False)
+[2026-07-28 17:55:09] [INFO] UI: ۱. بررسی مسیر نصب و فضای دیسک...
+[2026-07-28 17:55:10] [INFO] Free space on D:: 39.19 GB
+[2026-07-28 17:55:10] [INFO] UI: ۲. مسیر نصب معتبر است. فضای آزاد: 39.19 گیگابایت
+[2026-07-28 17:55:10] [INFO] UI: ۳. جستجوی فایل requirements...
+[2026-07-28 17:55:10] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.lock.txt
+[2026-07-28 17:55:10] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.txt
+[2026-07-28 17:55:10] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.lock.txt
+[2026-07-28 17:55:10] [INFO] requirements resolved to: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
+[2026-07-28 17:55:10] [INFO] requirements entries: 4
+[2026-07-28 17:55:10] [INFO] UI: ۴. فایل requirements یافت شد (4 بسته).
+[2026-07-28 17:55:10] [INFO] UI: ۵. بررسی مخزن آفلاین کتابخانه‌ها...
+[2026-07-28 17:55:10] [INFO] Offline packages found: 85 wheels, 85 source archives
+[2026-07-28 17:55:10] [INFO] UI: ۶. تعداد 85 بسته آفلاین آماده است.
+[2026-07-28 17:55:10] [INFO] UI: ۷. آماده‌سازی مفسر پایتون...
+[2026-07-28 17:55:10] [INFO] Using embedded Python: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python\python.exe
+[2026-07-28 17:55:10] [INFO] UI: ۹. رد شدن از بررسی سازگاری نسخه پایتون (طبق تنظیمات دستی)...
+[2026-07-28 17:55:10] [INFO] Skipping Python ABI check as requested. Proceeding to requirements installation...
+[2026-07-28 17:55:10] [INFO] UI: ۱۱. ایجاد محیط مجازی پایتون (venv)...
+[2026-07-28 17:55:10] [INFO] Copying embedded Python from D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python to D:\UT\ManagementAndcontrollingITProjects\HNO\venv
+[2026-07-28 17:55:10] [INFO] Virtual environment created successfully: D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe
+[2026-07-28 17:55:10] [INFO] UI: ۱۲. محیط مجازی آماده شد.
+[2026-07-28 17:55:10] [INFO] UI: ۱۲.۵. در حال تزریق هسته Pip و تنظیمات مسیر...
+[2026-07-28 17:55:10] [INFO] UI: ۱۲.۵. در حال تزریق هسته Pip و تنظیمات مسیر...
+[2026-07-28 17:55:10] [INFO] Added Lib\site-packages to python312._pth
+[2026-07-28 17:55:10] [INFO] Extracting Pip and Setuptools physically...
+[2026-07-28 17:55:10] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe" D:\UT\ManagementAndcontrollingITProjects\HNO\venv\extract_wheels.py
+[2026-07-28 17:55:12] [INFO] EXIT:  after 2s
+[2026-07-28 17:55:12] [INFO] Pip and Setuptools physically injected successfully!
+[2026-07-28 17:55:12] [INFO] UI: ۱۳. نصب آفلاین کتابخانه‌ها. این مرحله چند دقیقه طول می‌کشد...
+[2026-07-28 17:55:12] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe" -m pip install --no-index --find-links D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries --only-binary :all: --no-cache-dir --disable-pip-version-check --no-warn-script-location --no-input --isolated --verbose -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
+[2026-07-28 18:01:33] [INFO] EXIT:  after 381s
+[2026-07-28 18:01:33] [INFO] Pip installation verified as successful.
+[2026-07-28 18:01:33] [INFO] UI: ۱۴. کتابخانه‌ها نصب شدند. در حال تأیید...
+[2026-07-28 18:01:33] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe" -c "import streamlit, lancedb, langchain_community, langchain_text_splitters; print(\"IMPORT_OK\", streamlit.__version__)"
+[2026-07-28 18:01:48] [INFO] EXIT:  after 15s
+[2026-07-28 18:01:49] [ERROR] INSTALLATION FAILED: کتابخانه‌ها نصب شدند اما قابل بارگذاری نیستند.
+<string>:1: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.
+[2026-07-28 18:01:49] [ERROR] ScriptStackTrace: at Start-Installation, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 513
+at Invoke-Main, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 665
+at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 691
+at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 692
+[2026-07-28 18:01:49] [INFO] UI: خطا در نصب:
+کتابخانه‌ها نصب شدند اما قابل بارگذاری نیستند.
+<string>:1: DeprecationWarning: `langchain-community` is being sunset and is no longer actively maintained. See https://github.com/langchain-ai/langchain-community/issues/674 for details and migration guidance toward standalone integration packages.

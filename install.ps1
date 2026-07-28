@@ -361,38 +361,78 @@ function Start-Installation {
 
     Update-UI '۱۲. محیط مجازی آماده شد.' 36
     
+# =========================================================================
+    # مرحله ۱۲.۵: تزریق فیزیکی هسته Pip (نسخه با لاگ پیشرفته و رفع باگ پاورشل)
     # =========================================================================
-    # مرحله ۱۲.۵: تزریق و نصب آفلاین هسته Pip در محیط مجازی
-    # =========================================================================
-    Update-UI '۱۲.۵. در حال آماده‌سازی و نصب هسته Pip...' 45
-    Write-Log "UI: ۱۲.۵. در حال آماده‌سازی و نصب هسته Pip..." 'INFO'
+    Update-UI '۱۲.۵. در حال تزریق هسته Pip و تنظیمات مسیر...' 45
+    Write-Log "UI: ۱۲.۵. در حال تزریق هسته Pip و تنظیمات مسیر..." 'INFO'
 
+    # ۱. ایجاد پوشه استاندارد برای بسته‌ها
+    $SitePackagesDir = Join-Path $VenvDir "Lib\site-packages"
+    if (-not (Test-Path $SitePackagesDir)) {
+        New-Item -ItemType Directory -Path $SitePackagesDir -Force | Out-Null
+    }
+
+    # ۲. اصلاح قطعی فایل .pth برای اینکه پایتون مسیر را بشناسد
+    $PthFile = Get-ChildItem -Path $VenvDir -Filter "*._pth" | Select-Object -First 1
+    if ($PthFile) {
+        $pthContent = Get-Content $PthFile.FullName
+        if ($pthContent -notcontains "Lib\site-packages") {
+            Add-Content -Path $PthFile.FullName -Value "Lib\site-packages"
+            Write-Log "Added Lib\site-packages to $($PthFile.Name)" 'INFO'
+        }
+        (Get-Content $PthFile.FullName) -replace '^#\s*import site', 'import site' | Set-Content $PthFile.FullName
+    } else {
+        throw "فایل .pth در محیط مجازی پیدا نشد!"
+    }
+
+    # ۳. پیدا کردن فایل‌های whl
     $PipWheel = Get-ChildItem -Path $LibrariesDir -Filter "pip-*.whl" | Select-Object -First 1
-    if (-not $PipWheel) {
-        Write-Log "ERROR: pip wheel file not found in $LibrariesDir" 'ERROR'
-        throw "فایل نصب pip در پوشه libraries پیدا نشد!"
+    $SetupWheel = Get-ChildItem -Path $LibrariesDir -Filter "setuptools-*.whl" | Select-Object -First 1
+    if (-not $PipWheel -or -not $SetupWheel) {
+        throw "فایل‌های pip یا setuptools در پوشه libraries پیدا نشدند!"
     }
 
-    Write-Log "Bootstrapping pip using $($PipWheel.FullName)..." 'INFO'
+    Write-Log "Extracting Pip and Setuptools physically..." 'INFO'
+    $ExtractorScript = Join-Path $VenvDir "extract_wheels.py"
+    
+    # ۴. اسکریپت پایتون با لاگ‌گیری دقیق خطاها در فایل متنی
+    $ExtractorCode = @"
+import zipfile
+import sys
+import traceback
 
-    $bootstrapArgs = @(
-        "$($PipWheel.FullName)/pip", "install", "pip", "setuptools",
-        "--no-index",
-        "--find-links", $LibrariesDir,
-        "--no-warn-script-location"
-    )
+with open(r'$LogsDir\extract_debug.log', 'w', encoding='utf-8') as f:
+    try:
+        f.write('Starting extraction...\n')
+        zipfile.ZipFile(r'$($PipWheel.FullName)').extractall(r'$SitePackagesDir')
+        f.write('Pip extracted.\n')
+        zipfile.ZipFile(r'$($SetupWheel.FullName)').extractall(r'$SitePackagesDir')
+        f.write('Setuptools extracted.\n')
+        
+        print('EXTRACTION_SUCCESS')
+        f.write('Status: EXTRACTION_SUCCESS\n')
+    except Exception as e:
+        err_msg = traceback.format_exc()
+        print('EXTRACTION_ERROR')
+        f.write('Status: EXTRACTION_ERROR\n')
+        f.write(err_msg)
+        sys.exit(1)
+"@
+    $ExtractorCode | Out-File -FilePath $ExtractorScript -Encoding UTF8
 
-    $bootstrapCode = Invoke-Tracked -FilePath $VenvPython -Arguments $bootstrapArgs `
-                                    -StdOutFile $PipOutLog -StdErrFile $PipErrLog -TimeoutSeconds 300
+    $extractCode = Invoke-Tracked -FilePath $VenvPython -Arguments @($ExtractorScript) `
+                                    -StdOutFile $PipOutLog -StdErrFile $PipErrLog -TimeoutSeconds 60
 
-    if ($bootstrapCode -ne 0) {
-        $errTail = Get-LogTail $PipErrLog 30
-        $outTail = Get-LogTail $PipOutLog 30
-        Write-Log "Pip bootstrap stderr tail:`n$errTail" 'ERROR'
-        Write-Log "Pip bootstrap stdout tail:`n$outTail" 'ERROR'
-        throw "نصب اولیه pip با خطا مواجه شد."
+    # ۵. رفع باگ پاورشل: معیار بررسی فقط خروجی متنی موفقیت است، نه کد خروج.
+    $extractOut = Get-Content $PipOutLog -Raw -ErrorAction SilentlyContinue
+    if ($extractOut -notmatch 'EXTRACTION_SUCCESS') {
+        $errTail = Get-Content (Join-Path $LogsDir 'extract_debug.log') -Raw -ErrorAction SilentlyContinue
+        Write-Log "Extraction Failed. Python Log:`n$errTail" 'ERROR'
+        throw "تزریق فیزیکی Pip با خطا مواجه شد. به فایل extract_debug.log در پوشه logs مراجعه کنید."
     }
-    Write-Log "Pip successfully bootstrapped!" 'INFO'
+    
+    Write-Log "Pip and Setuptools physically injected successfully!" 'INFO'
     # =========================================================================
 
     # -------------------------------------------------------------------------
@@ -418,17 +458,20 @@ function Start-Installation {
     $code = Invoke-Tracked -FilePath $VenvPython -Arguments $pipArgs `
                            -StdOutFile $PipOutLog -StdErrFile $PipErrLog -TimeoutSeconds 3600
 
-    if ($code -ne 0) {
+    # بررسی قطعی موفقیت: اگر کد صفر نیست، لاگ را چک کن تا مطمئن شویم واقعا خطا بوده یا باگ پاورشل
+    $fullOut = Get-Content $PipOutLog -Raw -ErrorAction SilentlyContinue
+    $isSuccess = ($fullOut -match "Successfully installed")
+
+    if ($code -ne 0 -and -not $isSuccess) {
         $errTail = Get-LogTail $PipErrLog 30
         $outTail = Get-LogTail $PipOutLog 30
         Write-Log "pip stderr tail:`n$errTail" 'ERROR'
         Write-Log "pip stdout tail:`n$outTail" 'ERROR'
 
         # =========================================================================
-        # --- بخش تزریق شده برای لاگ‌گیری یکپارچه و دقیق ---
+        # --- بخش لاگ‌گیری یکپارچه ---
         # =========================================================================
         $DebugLogPath = Join-Path $LogsDir 'pip_full_debug.log'
-        $fullOut = Get-Content $PipOutLog -Raw -ErrorAction SilentlyContinue
         $fullErr = Get-Content $PipErrLog -Raw -ErrorAction SilentlyContinue
         
         $debugContent  = "=== PIP INSTALLATION DEBUG LOG ===`n"
@@ -442,7 +485,6 @@ function Start-Installation {
         Write-Log "فایل دیباگ جامع نصب ساخته شد: $DebugLogPath" 'INFO'
         # =========================================================================
 
-        # Surface the single most common offline failure explicitly.
         $missing = ''
         if ("$errTail`n$outTail" -match 'No matching distribution found for ([^\s]+)') {
             $missing = "`nبسته ناموجود: $($Matches[1])"
@@ -453,6 +495,7 @@ function Start-Installation {
                "لطفا فایل pip_full_debug.log را در پوشه لاگ بررسی کنید.")
     }
     
+    Write-Log "Pip installation verified as successful." 'INFO'
     Update-UI '۱۴. کتابخانه‌ها نصب شدند. در حال تأیید...' 55
     # -------------------------------------------------------------------------
     # STEP 8 — IMPORT SMOKE TEST

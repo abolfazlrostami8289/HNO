@@ -1,0 +1,84 @@
+﻿[2026-07-28 17:19:01] [INFO] ==========================================================
+[2026-07-28 17:19:01] [INFO] Installation script started.
+[2026-07-28 17:19:01] [INFO] BaseDir      : D:\UT\ManagementAndcontrollingITProjects\HNO
+[2026-07-28 17:19:01] [INFO] PowerShell   : 5.1.26100.8875
+[2026-07-28 17:19:01] [INFO] OS           : Microsoft Windows NT 10.0.26200.0
+[2026-07-28 17:19:01] [INFO] User         : Sejron.com (elevated=False)
+[2026-07-28 17:19:01] [INFO] UI: ۱. بررسی مسیر نصب و فضای دیسک...
+[2026-07-28 17:19:02] [INFO] Free space on D:: 39.78 GB
+[2026-07-28 17:19:02] [INFO] UI: ۲. مسیر نصب معتبر است. فضای آزاد: 39.78 گیگابایت
+[2026-07-28 17:19:02] [INFO] UI: ۳. جستجوی فایل requirements...
+[2026-07-28 17:19:02] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.lock.txt
+[2026-07-28 17:19:02] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.txt
+[2026-07-28 17:19:02] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.lock.txt
+[2026-07-28 17:19:02] [INFO] requirements resolved to: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
+[2026-07-28 17:19:02] [INFO] requirements entries: 4
+[2026-07-28 17:19:02] [INFO] UI: ۴. فایل requirements یافت شد (4 بسته).
+[2026-07-28 17:19:02] [INFO] UI: ۵. بررسی مخزن آفلاین کتابخانه‌ها...
+[2026-07-28 17:19:02] [INFO] Offline packages found: 85 wheels, 85 source archives
+[2026-07-28 17:19:02] [INFO] UI: ۶. تعداد 85 بسته آفلاین آماده است.
+[2026-07-28 17:19:02] [INFO] UI: ۷. آماده‌سازی مفسر پایتون...
+[2026-07-28 17:19:02] [INFO] Using embedded Python: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python\python.exe
+[2026-07-28 17:19:02] [INFO] UI: ۹. رد شدن از بررسی سازگاری نسخه پایتون (طبق تنظیمات دستی)...
+[2026-07-28 17:19:02] [INFO] Skipping Python ABI check as requested. Proceeding to requirements installation...
+[2026-07-28 17:19:02] [INFO] UI: ۱۱. ایجاد محیط مجازی پایتون (venv)...
+[2026-07-28 17:19:02] [INFO] Removing stale venv at D:\UT\ManagementAndcontrollingITProjects\HNO\venv
+[2026-07-28 17:19:02] [INFO] Copying embedded Python from D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python to D:\UT\ManagementAndcontrollingITProjects\HNO\venv
+[2026-07-28 17:19:02] [INFO] Virtual environment created successfully: D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe
+[2026-07-28 17:19:02] [INFO] UI: ۱۲. محیط مجازی آماده شد.
+[2026-07-28 17:19:02] [INFO] UI: ۱۲.۵. در حال تزریق هسته Pip و تنظیمات مسیر...
+[2026-07-28 17:19:02] [INFO] UI: ۱۲.۵. در حال تزریق هسته Pip و تنظیمات مسیر...
+[2026-07-28 17:19:02] [INFO] Added Lib\site-packages to python312._pth
+[2026-07-28 17:19:02] [INFO] Extracting Pip and Setuptools physically...
+[2026-07-28 17:19:02] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe" D:\UT\ManagementAndcontrollingITProjects\HNO\venv\extract_wheels.py
+[2026-07-28 17:19:04] [INFO] EXIT:  after 1s
+[2026-07-28 17:19:04] [INFO] Pip and Setuptools physically injected successfully!
+[2026-07-28 17:19:04] [INFO] UI: ۱۳. نصب آفلاین کتابخانه‌ها. این مرحله چند دقیقه طول می‌کشد...
+[2026-07-28 17:19:04] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe" -m pip install --no-index --find-links D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries --only-binary :all: --no-cache-dir --disable-pip-version-check --no-warn-script-location --no-input --isolated --verbose -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
+[2026-07-28 17:26:14] [INFO] EXIT:  after 431s
+[2026-07-28 17:26:15] [ERROR] pip stderr tail:
+
+[2026-07-28 17:26:15] [ERROR] pip stdout tail:
+Processing .\HamyarNejat_Package\libraries\distro-1.9.0-py3-none-any.whl (from langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\httpx-0.28.1-py3-none-any.whl (from langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\orjson-3.11.9-cp312-cp312-win_amd64.whl (from langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\requests_toolbelt-1.0.0-py2.py3-none-any.whl (from langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\sniffio-1.3.1-py3-none-any.whl (from langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\xxhash-3.8.1-cp312-cp312-win_amd64.whl (from langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\zstandard-0.25.0-cp312-cp312-win_amd64.whl (from langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\certifi-2026.7.22-py3-none-any.whl (from httpx<1,>=0.23.0->langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\httpcore-1.0.9-py3-none-any.whl (from httpx<1,>=0.23.0->langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\idna-3.18-py3-none-any.whl (from httpx<1,>=0.23.0->langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\h11-0.16.0-py3-none-any.whl (from httpcore==1.*->httpx<1,>=0.23.0->langsmith<1.0.0,>=0.1.125->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\python_dateutil-2.9.0.post0-py2.py3-none-any.whl (from pandas<4,>=1.4.0->streamlit==1.58.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 4))
+Processing .\HamyarNejat_Package\libraries\tzdata-2026.3-py2.py3-none-any.whl (from pandas<4,>=1.4.0->streamlit==1.58.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 4))
+Processing .\HamyarNejat_Package\libraries\annotated_types-0.8.0-py3-none-any.whl (from pydantic>=1.10->lancedb==0.34.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 1))
+Processing .\HamyarNejat_Package\libraries\pydantic_core-2.46.4-cp312-cp312-win_amd64.whl (from pydantic>=1.10->lancedb==0.34.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 1))
+Processing .\HamyarNejat_Package\libraries\typing_inspection-0.4.2-py3-none-any.whl (from pydantic>=1.10->lancedb==0.34.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 1))
+Processing .\HamyarNejat_Package\libraries\python_dotenv-1.2.2-py3-none-any.whl (from pydantic-settings<3.0.0,>=2.10.1->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\charset_normalizer-3.4.9-cp312-cp312-win_amd64.whl (from requests<3.0.0,>=2.32.5->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\urllib3-2.7.0-py3-none-any.whl (from requests<3.0.0,>=2.32.5->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\greenlet-3.5.4-cp312-cp312-win_amd64.whl (from sqlalchemy<3.0.0,>=1.4.0->langchain_community==0.4.2->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\markupsafe-3.0.3-cp312-cp312-win_amd64.whl (from jinja2->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit==1.58.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 4))
+Processing .\HamyarNejat_Package\libraries\jsonschema_specifications-2025.9.1-py3-none-any.whl (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit==1.58.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 4))
+Processing .\HamyarNejat_Package\libraries\referencing-0.37.0-py3-none-any.whl (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit==1.58.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 4))
+Processing .\HamyarNejat_Package\libraries\rpds_py-2026.6.3-cp312-cp312-win_amd64.whl (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=4.0->streamlit==1.58.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 4))
+Processing .\HamyarNejat_Package\libraries\lance_namespace_urllib3_client-0.9.0-py3-none-any.whl (from lance-namespace>=0.3.2->lancedb==0.34.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 1))
+Processing .\HamyarNejat_Package\libraries\six-1.17.0-py2.py3-none-any.whl (from python-dateutil>=2.8.2->pandas<4,>=1.4.0->streamlit==1.58.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 4))
+Installing collected packages: zstandard, xxhash, websockets, watchdog, uuid-utils, urllib3, tzdata, typing-extensions, toml, tenacity, sniffio, smmap, six, rpds-py, pyyaml, python-multipart, python-dotenv, pyarrow, protobuf, propcache, pillow, packaging, orjson, numpy, narwhals, multidict, MarkupSafe, jsonpointer, itsdangerous, idna, httpx-sse, httptools, h11, greenlet, frozenlist, distro, colorama, charset_normalizer, certifi, cachetools, blinker, attrs, annotated-types, aiohappyeyeballs, yarl, typing-inspection, tqdm, sqlalchemy, requests, referencing, python-dateutil, pydantic-core, langchain-protocol, jsonpatch, jinja2, httpcore, gitdb, deprecation, click, anyio, aiosignal, uvicorn, starlette, requests-toolbelt, pydeck, pydantic, pandas, jsonschema-specifications, httpx, gitpython, aiohttp, pydantic-settings, langsmith, lance-namespace-urllib3-client, jsonschema, langchain-core, lance-namespace, altair, streamlit, langchain_text_splitters, lancedb, langchain-classic, langchain_community
+  Creating D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Scripts
+
+Successfully installed MarkupSafe-3.0.3 aiohappyeyeballs-2.7.1 aiohttp-3.14.3 aiosignal-1.4.0 altair-6.2.2 annotated-types-0.8.0 anyio-4.14.2 attrs-26.1.0 blinker-1.9.0 cachetools-7.1.6 certifi-2026.7.22 charset_normalizer-3.4.9 click-8.4.2 colorama-0.4.6 deprecation-2.1.0 distro-1.9.0 frozenlist-1.8.0 gitdb-4.0.12 gitpython-3.1.57 greenlet-3.5.4 h11-0.16.0 httpcore-1.0.9 httptools-0.8.0 httpx-0.28.1 httpx-sse-0.4.3 idna-3.18 itsdangerous-2.2.0 jinja2-3.1.6 jsonpatch-1.33 jsonpointer-3.1.1 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 lance-namespace-0.9.0 lance-namespace-urllib3-client-0.9.0 lancedb-0.34.0 langchain-classic-1.0.8 langchain-core-1.5.1 langchain-protocol-0.0.18 langchain_community-0.4.2 langchain_text_splitters-1.1.2 langsmith-0.10.10 multidict-6.7.1 narwhals-2.24.0 numpy-2.5.1 orjson-3.11.9 packaging-26.2 pandas-3.0.5 pillow-12.3.0 propcache-0.5.2 protobuf-7.35.1 pyarrow-25.0.0 pydantic-2.13.4 pydantic-core-2.46.4 pydantic-settings-2.14.2 pydeck-0.9.3 python-dateutil-2.9.0.post0 python-dotenv-1.2.2 python-multipart-0.0.32 pyyaml-6.0.3 referencing-0.37.0 requests-2.34.2 requests-toolbelt-1.0.0 rpds-py-2026.6.3 six-1.17.0 smmap-5.0.3 sniffio-1.3.1 sqlalchemy-2.0.51 starlette-1.3.1 streamlit-1.58.0 tenacity-9.1.4 toml-0.10.2 tqdm-4.70.0 typing-extensions-4.16.0 typing-inspection-0.4.2 tzdata-2026.3 urllib3-2.7.0 uuid-utils-0.17.0 uvicorn-0.51.0 watchdog-6.0.0 websockets-16.1.1 xxhash-3.8.1 yarl-1.24.5 zstandard-0.25.0
+[2026-07-28 17:26:15] [INFO] فایل دیباگ جامع نصب ساخته شد: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_full_debug.log
+[2026-07-28 17:26:15] [ERROR] INSTALLATION FAILED: نصب کتابخانه‌ها با خطا مواجه شد (کد ).
+لاگ کامل: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_stderr.log
+لطفا فایل pip_full_debug.log را در پوشه لاگ بررسی کنید.
+[2026-07-28 17:26:15] [ERROR] ScriptStackTrace: at Start-Installation, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 491
+at Invoke-Main, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 662
+at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 688
+at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 689
+[2026-07-28 17:26:15] [INFO] UI: خطا در نصب:
+نصب کتابخانه‌ها با خطا مواجه شد (کد ).
+لاگ کامل: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_stderr.log
+لطفا فایل pip_full_debug.log را در پوشه لاگ بررسی کنید.
+[2026-07-28 17:30:47] [INFO] Exiting with code 1

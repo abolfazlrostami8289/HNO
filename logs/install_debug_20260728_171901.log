@@ -1,0 +1,65 @@
+﻿[2026-07-28 17:00:34] [INFO] ==========================================================
+[2026-07-28 17:00:34] [INFO] Installation script started.
+[2026-07-28 17:00:34] [INFO] BaseDir      : D:\UT\ManagementAndcontrollingITProjects\HNO
+[2026-07-28 17:00:34] [INFO] PowerShell   : 5.1.26100.8875
+[2026-07-28 17:00:34] [INFO] OS           : Microsoft Windows NT 10.0.26200.0
+[2026-07-28 17:00:34] [INFO] User         : Sejron.com (elevated=False)
+[2026-07-28 17:00:34] [INFO] UI: ۱. بررسی مسیر نصب و فضای دیسک...
+[2026-07-28 17:00:35] [INFO] Free space on D:: 40 GB
+[2026-07-28 17:00:35] [INFO] UI: ۲. مسیر نصب معتبر است. فضای آزاد: 40 گیگابایت
+[2026-07-28 17:00:35] [INFO] UI: ۳. جستجوی فایل requirements...
+[2026-07-28 17:00:35] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.lock.txt
+[2026-07-28 17:00:35] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries\requirements.txt
+[2026-07-28 17:00:35] [DEBUG] requirements not at: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.lock.txt
+[2026-07-28 17:00:35] [INFO] requirements resolved to: D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
+[2026-07-28 17:00:35] [INFO] requirements entries: 4
+[2026-07-28 17:00:35] [INFO] UI: ۴. فایل requirements یافت شد (4 بسته).
+[2026-07-28 17:00:35] [INFO] UI: ۵. بررسی مخزن آفلاین کتابخانه‌ها...
+[2026-07-28 17:00:35] [INFO] Offline packages found: 109 wheels, 109 source archives
+[2026-07-28 17:00:35] [INFO] UI: ۶. تعداد 109 بسته آفلاین آماده است.
+[2026-07-28 17:00:35] [INFO] UI: ۷. آماده‌سازی مفسر پایتون...
+[2026-07-28 17:00:35] [INFO] Using embedded Python: D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python\python.exe
+[2026-07-28 17:00:35] [INFO] UI: ۹. رد شدن از بررسی سازگاری نسخه پایتون (طبق تنظیمات دستی)...
+[2026-07-28 17:00:35] [INFO] Skipping Python ABI check as requested. Proceeding to requirements installation...
+[2026-07-28 17:00:35] [INFO] UI: ۱۱. ایجاد محیط مجازی پایتون (venv)...
+[2026-07-28 17:00:35] [INFO] Removing stale venv at D:\UT\ManagementAndcontrollingITProjects\HNO\venv
+[2026-07-28 17:00:35] [INFO] Copying embedded Python from D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\installers\python to D:\UT\ManagementAndcontrollingITProjects\HNO\venv
+[2026-07-28 17:00:35] [INFO] Virtual environment created successfully: D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe
+[2026-07-28 17:00:35] [INFO] UI: ۱۲. محیط مجازی آماده شد.
+[2026-07-28 17:00:35] [INFO] UI: ۱۲.۵. در حال تزریق هسته Pip و تنظیمات مسیر...
+[2026-07-28 17:00:35] [INFO] UI: ۱۲.۵. در حال تزریق هسته Pip و تنظیمات مسیر...
+[2026-07-28 17:00:35] [INFO] Added Lib\site-packages to python312._pth
+[2026-07-28 17:00:35] [INFO] Extracting Pip and Setuptools physically...
+[2026-07-28 17:00:35] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe" D:\UT\ManagementAndcontrollingITProjects\HNO\venv\extract_wheels.py
+[2026-07-28 17:00:36] [INFO] EXIT:  after 1s
+[2026-07-28 17:00:36] [INFO] Pip and Setuptools physically injected successfully!
+[2026-07-28 17:00:36] [INFO] UI: ۱۳. نصب آفلاین کتابخانه‌ها. این مرحله چند دقیقه طول می‌کشد...
+[2026-07-28 17:00:36] [INFO] EXEC: "D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe" -m pip install --no-index --find-links D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries --only-binary :all: --no-cache-dir --disable-pip-version-check --no-warn-script-location --no-input --isolated --verbose -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
+[2026-07-28 17:00:45] [INFO] EXIT:  after 9s
+[2026-07-28 17:00:45] [ERROR] pip stderr tail:
+ERROR: Could not find a version that satisfies the requirement numpy>=1.24.0 (from lancedb) (from versions: none)
+ERROR: No matching distribution found for numpy>=1.24.0
+[2026-07-28 17:00:45] [ERROR] pip stdout tail:
+Using pip 26.1.2 from D:\UT\ManagementAndcontrollingITProjects\HNO\venv\Lib\site-packages\pip (python 3.12)
+Looking in links: d:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries
+Processing .\HamyarNejat_Package\libraries\lancedb-0.34.0-cp39-abi3-win_amd64.whl (from -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 1))
+Processing .\HamyarNejat_Package\libraries\langchain_community-0.4.2-py3-none-any.whl (from -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 2))
+Processing .\HamyarNejat_Package\libraries\langchain_text_splitters-1.1.2-py3-none-any.whl (from -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 3))
+Processing .\HamyarNejat_Package\libraries\streamlit-1.58.0-py3-none-any.whl (from -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 4))
+Processing .\HamyarNejat_Package\libraries\deprecation-2.1.0-py2.py3-none-any.whl (from lancedb==0.34.0->-r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt (line 1))
+INFO: pip is looking at multiple versions of lancedb to determine which version is compatible with other requirements. This could take a while.
+[2026-07-28 17:00:45] [INFO] فایل دیباگ جامع نصب ساخته شد: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_full_debug.log
+[2026-07-28 17:00:45] [ERROR] INSTALLATION FAILED: نصب کتابخانه‌ها با خطا مواجه شد (کد ).
+بسته ناموجود: numpy>=1.24.0
+لاگ کامل: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_stderr.log
+لطفا فایل pip_full_debug.log را در پوشه لاگ بررسی کنید.
+[2026-07-28 17:00:45] [ERROR] ScriptStackTrace: at Start-Installation, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 491
+at Invoke-Main, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 662
+at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 688
+at <ScriptBlock>, D:\UT\ManagementAndcontrollingITProjects\HNO\install.ps1: line 689
+[2026-07-28 17:00:45] [INFO] UI: خطا در نصب:
+نصب کتابخانه‌ها با خطا مواجه شد (کد ).
+بسته ناموجود: numpy>=1.24.0
+لاگ کامل: D:\UT\ManagementAndcontrollingITProjects\HNO\logs\pip_stderr.log
+لطفا فایل pip_full_debug.log را در پوشه لاگ بررسی کنید.
+[2026-07-28 17:06:45] [INFO] Exiting with code 1
