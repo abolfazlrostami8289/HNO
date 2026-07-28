@@ -517,7 +517,8 @@ with open(r'$LogsDir\extract_debug.log', 'w', encoding='utf-8') as f:
     # Prove the Streamlit CLI itself is runnable — the exact call run.ps1 makes.
     $code = Invoke-Tracked -FilePath $VenvPython -Arguments @('-m', 'streamlit', '--version') `
                            -StdOutFile $ProbeOutLog -StdErrFile $ProbeErrLog -TimeoutSeconds 300
-    if ($code -ne 0) {
+    $streamlitOut = Get-LogTail $ProbeOutLog 5
+    if ($streamlitOut -notmatch 'Streamlit, version') {
         throw "اجرای Streamlit ممکن نیست.`n$(Get-LogTail $ProbeErrLog 20)"
     }
     Write-Log "Streamlit CLI: $(Get-LogTail $ProbeOutLog 2)"
