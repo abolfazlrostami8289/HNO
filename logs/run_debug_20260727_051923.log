@@ -1,7 +1,0 @@
-﻿[2026-07-26 19:54:40] [INFO] ==========================================================
-[2026-07-26 19:54:40] [INFO] Launcher script started.
-[2026-07-26 19:54:40] [INFO] BaseDir    : D:\UT\ManagementAndcontrollingITProjects\HNO
-[2026-07-26 19:54:40] [INFO] PowerShell : 5.1.26100.8875
-[2026-07-26 19:54:40] [ERROR] FATAL: فایل تنظیمات محیط یافت نشد:
-D:\UT\ManagementAndcontrollingITProjects\HNO\hamyar_env.json
-[2026-07-26 19:54:40] [ERROR] HINT: به نظر می‌رسد نصب کامل نشده است. لطفاً ابتدا install.ps1 را اجرا کنید.

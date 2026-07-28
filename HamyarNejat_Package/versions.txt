@@ -1,6 +1,7 @@
-=== اطلاعات نسخه‌های پکیج همیار نجات ===
-Python Version: 
+==== HNO's Package Information ====
+
+Python Version: 3.12.7
 Ollama Version: 
-LLM Model Name & Size: 
-Total Package Size: 
+LLM Model Name & Size: aya-expanse 
+Total Package Size: 7.77GB
 Date Packaged: 

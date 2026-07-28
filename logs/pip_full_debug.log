@@ -1,0 +1,12 @@
+﻿=== PIP INSTALLATION DEBUG LOG ===
+Exit Code: 
+Arguments Used: -m pip install --no-index --find-links D:\UT\ManagementAndcontrollingITProjects\HNO\HamyarNejat_Package\libraries --only-binary :all: --no-cache-dir --disable-pip-version-check --no-warn-script-location --no-input --isolated --verbose -r D:\UT\ManagementAndcontrollingITProjects\HNO\requirements.txt
+
+--- STDOUT (Log) ---
+
+
+--- STDERR (Error) ---
+D:\UT\ManagementAndcontrollingITProjects\HNO\venv\python.exe: No module named pip
+
+==================================
+

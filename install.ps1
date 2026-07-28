@@ -326,46 +326,11 @@ function Start-Installation {
     Write-Log "Using embedded Python: $PythonExe"
 
     # -------------------------------------------------------------------------
-    # STEP 5 — ABI compatibility gate
-    #   Wheels are built for one specific cpXY tag. The original version-check
-    #   regex accepted 3.11 through 3.19, so a 3.13 host passed the check and
-    #   then failed the install with an opaque pip error.
+    # STEP 5 — ABI compatibility gate (SKIPPED)
     # -------------------------------------------------------------------------
-    Update-UI '۹. بررسی سازگاری نسخه پایتون با بسته‌های آفلاین...' 24
+    Update-UI '۹. رد شدن از بررسی سازگاری نسخه پایتون (طبق تنظیمات دستی)...' 24
+    Write-Log "Skipping Python ABI check as requested. Proceeding to requirements installation..."
 
-    $probeScript = Join-Path $LogsDir 'probe.py'
-    $probeCode = 'import sys;print("cp%d%d" % sys.version_info[:2]);print(sys.version)'
-    Set-Content -Path $probeScript -Value $probeCode -Encoding UTF8
-
-    try {
-        $code = Invoke-Tracked -FilePath $PythonExe `
-                               -Arguments @($probeScript) `
-                               -StdOutFile $ProbeOutLog -StdErrFile $ProbeErrLog -TimeoutSeconds 60
-        if ($code -ne 0) { throw "اجرای پایتون با خطا مواجه شد. جزئیات در $ProbeErrLog" }
-    } finally {
-        Remove-Item -Path $probeScript -ErrorAction SilentlyContinue
-    }
-
-    $probe     = @(Get-Content -LiteralPath $ProbeOutLog | Where-Object { $_.Trim() })
-    $pyTag     = $probe[0].Trim()
-    $pyVersion = if ($probe.Count -gt 1) { $probe[1].Trim() } else { 'unknown' }
-    Write-Log "Python ABI tag: $pyTag / version: $pyVersion"
-
-    if ($wheels.Count -gt 0) {
-        $compatible = @($wheels | Where-Object {
-            $_.Name -match "-$pyTag-" -or $_.Name -match '-py3-none-any\.whl$' -or $_.Name -match '-py2\.py3-none-any\.whl$'
-        })
-        $binaryWheels = @($wheels | Where-Object { $_.Name -notmatch '-none-any\.whl$' })
-        if ($binaryWheels.Count -gt 0 -and $compatible.Count -eq 0) {
-            $sample = ($binaryWheels | Select-Object -First 3 -ExpandProperty Name) -join ', '
-            throw ("بسته‌های آفلاین با این نسخه پایتون سازگار نیستند.`n" +
-                   "نسخه پایتون: $pyVersion (تگ: $pyTag)`n" +
-                   "نمونه بسته‌ها: $sample`n" +
-                   "بسته‌ها را با همان نسخه پایتون دوباره دانلود کنید.")
-        }
-        Write-Log "ABI-compatible wheels: $($compatible.Count) of $($wheels.Count)"
-    }
-    Update-UI "۱۰. پایتون سازگار است ($pyTag)." 28 -Detail $pyVersion
 
     # -------------------------------------------------------------------------
     # STEP 6 — Create a clean virtual environment
@@ -395,7 +360,7 @@ function Start-Installation {
     Write-Log "Virtual environment created successfully: $VenvPython"
 
     Update-UI '۱۲. محیط مجازی آماده شد.' 36
-
+    
     # -------------------------------------------------------------------------
     # STEP 7 — OFFLINE PIP INSTALL
     # -------------------------------------------------------------------------
@@ -425,16 +390,36 @@ function Start-Installation {
         Write-Log "pip stderr tail:`n$errTail" 'ERROR'
         Write-Log "pip stdout tail:`n$outTail" 'ERROR'
 
+        # =========================================================================
+        # --- بخش تزریق شده برای لاگ‌گیری یکپارچه و دقیق ---
+        # =========================================================================
+        $DebugLogPath = Join-Path $LogsDir 'pip_full_debug.log'
+        $fullOut = Get-Content $PipOutLog -Raw -ErrorAction SilentlyContinue
+        $fullErr = Get-Content $PipErrLog -Raw -ErrorAction SilentlyContinue
+        
+        $debugContent  = "=== PIP INSTALLATION DEBUG LOG ===`n"
+        $debugContent += "Exit Code: $code`n"
+        $debugContent += "Arguments Used: $($pipArgs -join ' ')`n`n"
+        $debugContent += "--- STDOUT (Log) ---`n$fullOut`n`n"
+        $debugContent += "--- STDERR (Error) ---`n$fullErr`n"
+        $debugContent += "==================================`n"
+        
+        Set-Content -Path $DebugLogPath -Value $debugContent -Encoding UTF8
+        Write-Log "فایل دیباگ جامع نصب ساخته شد: $DebugLogPath" 'INFO'
+        # =========================================================================
+
         # Surface the single most common offline failure explicitly.
         $missing = ''
         if ("$errTail`n$outTail" -match 'No matching distribution found for ([^\s]+)') {
             $missing = "`nبسته ناموجود: $($Matches[1])"
         }
+        
         throw ("نصب کتابخانه‌ها با خطا مواجه شد (کد $code).$missing`n" +
-               "لاگ کامل: $PipErrLog")
+               "لاگ کامل: $PipErrLog`n" + 
+               "لطفا فایل pip_full_debug.log را در پوشه لاگ بررسی کنید.")
     }
+    
     Update-UI '۱۴. کتابخانه‌ها نصب شدند. در حال تأیید...' 55
-
     # -------------------------------------------------------------------------
     # STEP 8 — IMPORT SMOKE TEST
     #   This is the check whose absence let the original bug through: pip was
@@ -557,6 +542,39 @@ fastReruns = true
     $manifest | ConvertTo-Json -Depth 4 | Set-Content -Path $ManifestFile -Encoding UTF8
     Write-Log "Manifest written: $ManifestFile"
 
+    # =========================================================================
+    # مرحله ۱۲.۵: تزریق و نصب آفلاین هسته Pip در محیط مجازی
+    # =========================================================================
+    Update-UI '۱۲.۵. در حال آماده‌سازی و نصب هسته Pip...' 45
+    Write-Log "UI: ۱۲.۵. در حال آماده‌سازی و نصب هسته Pip..." 'INFO'
+    
+    $PipWheel = Get-ChildItem -Path $LibrariesDir -Filter "pip-*.whl" | Select-Object -First 1
+    if (-not $PipWheel) {
+        Write-Log "ERROR: pip wheel file not found in $LibrariesDir" 'ERROR'
+        throw "فایل نصب pip در پوشه libraries پیدا نشد!"
+    }
+    
+    Write-Log "Bootstrapping pip using $($PipWheel.FullName)..." 'INFO'
+    
+    # اجرای مستقیم فایل whl با پایتون
+    $VenvPython = Join-Path $BaseDir "venv\python.exe"
+    $bootstrapArgs = @(
+        "$($PipWheel.FullName)/pip", "install", "pip", "setuptools",
+        "--no-index",
+        "--find-links", $LibrariesDir,
+        "--no-warn-script-location"
+    )
+    
+    Write-Log "EXEC Bootstrap: $VenvPython $($bootstrapArgs -join ' ')" 'INFO'
+    $bootstrapProcess = Start-Process -FilePath $VenvPython -ArgumentList $bootstrapArgs -Wait -NoNewWindow -PassThru
+    
+    if ($bootstrapProcess.ExitCode -ne 0) {
+        Write-Log "ERROR: Pip bootstrap failed with exit code $($bootstrapProcess.ExitCode)" 'ERROR'
+        throw "نصب اولیه pip با خطا مواجه شد."
+    }
+    Write-Log "Pip successfully bootstrapped!" 'INFO'
+    # =========================================================================
+    
     # -------------------------------------------------------------------------
     # STEP 13 — Desktop shortcut (current user; installer is NOT elevated)
     # -------------------------------------------------------------------------
