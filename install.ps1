@@ -505,7 +505,7 @@ with open(r'$LogsDir\extract_debug.log', 'w', encoding='utf-8') as f:
     # -------------------------------------------------------------------------
     $smoke = 'import streamlit, lancedb, langchain_community, langchain_text_splitters; ' +
              'print("IMPORT_OK", streamlit.__version__)'
-    $code = Invoke-Tracked -FilePath $VenvPython -Arguments @('-c', $smoke) `
+    $code = Invoke-Tracked -FilePath $VenvPython -Arguments @('-W', 'ignore', '-c', $smoke) `
                            -StdOutFile $ProbeOutLog -StdErrFile $ProbeErrLog -TimeoutSeconds 300
     $smokeOut = Get-LogTail $ProbeOutLog 5
     if ($code -ne 0 -or $smokeOut -notmatch 'IMPORT_OK') {
