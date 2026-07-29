@@ -69,8 +69,8 @@ def setup_custom_sidebar():
             cursor: pointer;
         }}
         
-        /* چرخش فلش برای حالت بسته شدن (collapsed) */
-        [data-testid="collapsedControl"]::before {{
+        /* چرخش فلش برای حالت باز بودن (expanded) */
+        [data-testid="stSidebarCollapseButton"]::before {{
             transform: rotate(180deg);
         }}
         
