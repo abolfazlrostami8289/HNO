@@ -68,10 +68,33 @@ def inject_articles_css():
         .block-container {
             padding-bottom: 80px !important;
         }
+        /* Inline Header styling */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            direction: rtl;
+            margin-bottom: 20px;
+        }
+        .header-container img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-left: 15px;
+            object-fit: cover;
+            background-color: transparent;
+        }
+        .header-container h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 2.5rem;
+            line-height: 1.2;
+        }
     </style>
     """, unsafe_allow_html=True)
 
-st.set_page_config(page_title="مقالات فوریت‌های پزشکی", page_icon="logo.png", layout="centered")
+logo_path = os.path.join(parent_dir, "assets", "images", "logo.png")
+st.set_page_config(page_title="مقالات فوریت‌های پزشکی", page_icon=logo_path, layout="centered")
 setup_custom_sidebar()
 inject_articles_css()
 
@@ -82,7 +105,17 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-articles_icon_path = os.path.join(parent_dir, "icon_articles.png")
+logo_b64 = get_base64_of_bin_file(logo_path)
+img_tag = f'<img src="data:image/png;base64,{logo_b64}" alt="Logo">' if logo_b64 else ""
+
+st.markdown(f"""
+<div class="header-container">
+    {img_tag}
+    <h1>همیار نجات آفلاین</h1>
+</div>
+""", unsafe_allow_html=True)
+
+articles_icon_path = os.path.join(parent_dir, "assets", "images", "icon_articles.png")
 articles_b64 = get_base64_of_bin_file(articles_icon_path)
 icon_html = f'<img src="data:image/png;base64,{articles_b64}" style="width: 40px; margin-left: 10px;">' if articles_b64 else ""
 

@@ -152,6 +152,29 @@ div[data-testid="stChatInput"] {{ direction: rtl !important; }}
     animation: hn-blink 1s step-end infinite; margin-right: 2px;
 }}
 @keyframes hn-blink {{ 50% {{ opacity: 0; }} }}
+
+/* Inline Header styling */
+.header-container {{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    direction: rtl;
+    margin-bottom: 20px;
+}}
+.header-container img {{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-left: 15px;
+    object-fit: cover;
+    background-color: transparent;
+}}
+.header-container h1 {{
+    margin: 0;
+    padding: 0;
+    font-size: 2.5rem;
+    line-height: 1.2;
+}}
 </style>
 """,
     unsafe_allow_html=True,
@@ -160,7 +183,24 @@ div[data-testid="stChatInput"] {{ direction: rtl !important; }}
 if setup_custom_sidebar:
     setup_custom_sidebar()
 
-st.title("چت با همیار نجات")
+def get_base64_of_bin_file(bin_file):
+    import base64
+    if os.path.exists(bin_file):
+        with open(bin_file, 'rb') as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    return ""
+
+logo_path = os.path.join(parent_dir, "assets", "images", "logo.png")
+logo_b64 = get_base64_of_bin_file(logo_path)
+img_tag = f'<img src="data:image/png;base64,{logo_b64}" alt="Logo">' if logo_b64 else ""
+
+st.markdown(f"""
+<div class="header-container">
+    {img_tag}
+    <h1>همیار نجات آفلاین</h1>
+</div>
+""", unsafe_allow_html=True)
 
 category = st.selectbox(
     "حوزه سوال خود را انتخاب کنید (جهت جستجوی دقیق تر):",
